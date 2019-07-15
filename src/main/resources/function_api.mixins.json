@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "hu.frontrider.functionapi.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "BlockMixin","ServerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
