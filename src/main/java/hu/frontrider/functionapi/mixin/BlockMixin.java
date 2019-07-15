@@ -42,6 +42,9 @@ public class BlockMixin {
     private EventManager exploded = new EventManager((ScriptedObject) this, "exploded");
     private EventManager activate = new EventManager((ScriptedObject) this, "activate");
     private EventManager steppedOn = new EventManager((ScriptedObject) this, "steppedOn");
+    private EventManager entityCollided = new EventManager((ScriptedObject) this, "entityCollided");
+    private EventManager entityLanded = new EventManager((ScriptedObject) this, "entityLanded");
+    private EventManager projectileHit = new EventManager((ScriptedObject) this, "projectileHit");
 
 
     @Inject(
@@ -113,6 +116,44 @@ public class BlockMixin {
             steppedOn.fire(commandContext);
         }
     }
+
+    @Inject(
+            at = @At("TAIL"),
+            method = "onEntityCollision"
+    )
+    private void onEntityCollision(BlockState blockState_1, World world_1, BlockPos blockPos_1, Entity entity_1, CallbackInfo ci){
+
+        if (world_1 instanceof ServerWorld) {
+            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1);
+            entityCollided.fire(commandContext);
+        }
+    }
+
+
+    @Inject(
+            at = @At("TAIL"),
+            method = "onLandedUpon"
+    )
+    private void onLandedUpon(World world_1, BlockPos blockPos_1, Entity entity_1, float float_1, CallbackInfo ci){
+
+        if (world_1 instanceof ServerWorld) {
+            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1,entity_1);
+            entityLanded.fire(commandContext);
+        }
+    }
+
+    @Inject(
+            at = @At("TAIL"),
+            method = "onProjectileHit"
+    )
+    private void onProjectileHit(World world_1, BlockState blockState_1, BlockHitResult blockHitResult_1, Entity entity_1, CallbackInfo ci){
+
+        if (world_1 instanceof ServerWorld) {
+            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockHitResult_1.getBlockPos(),entity_1);
+            projectileHit.fire(commandContext);
+        }
+    }
+
     /**
      * Dynamically gets the id of this block instance.
      */
@@ -133,6 +174,9 @@ public class BlockMixin {
         exploded.markDirty();
         activate.markDirty();
         steppedOn.markDirty();
+        entityCollided.markDirty();
+        entityLanded.markDirty();
+        projectileHit.markDirty();
     }
 
     public String api_scripted$getType() {
