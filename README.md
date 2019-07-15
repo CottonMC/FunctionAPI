@@ -19,3 +19,6 @@ tags:
 | api:block-projectileHit-*namespace*-*name*  | called after the block was hit by a projectile (arrow, fireball)| called in the name of the block, in it's position, the entity of the projectile is also included |
 | api:item-useOnBlock-*namespace*-*name*  | called after the item was used on a block | called in the name of the user, in it's position |
 | api:item-finishUsing-*namespace*-*name*  | called after the item was used | called in the name of the user, in it's position |
+
+
+Examples can be found in the examples folder.
