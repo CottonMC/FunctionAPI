@@ -20,5 +20,14 @@ tags:
 | api:item-useOnBlock-*namespace*-*name*  | called after the item was used on a block | called in the name of the user, in it's position |
 | api:item-finishUsing-*namespace*-*name*  | called after the item was used | called in the name of the user, in it's position |
 
+| api:entity-tick-*namespace*-*entity_name*  | Every time the entity updates, as the entity |
+| api:entity-swimstart-*namespace*-*entity_name*  | When the entity started swimming, as the entity |
+| api:entity-killed_other-*namespace*-*entity_name*  | when the entity killed an another, as the entity |
+| api:entity-struck_by_lightning-*namespace*-*entity_name*  | when the entity was struck by lightning, as the entity |
+
+| api:livingentity-on_attacking-*namespace*-*entity_name*  | when the entiy attacked an another one, as the entity, as the entity |
+
+| api:livingentity-on_death-*namespace*-*entity_name*  | when the entiy has died,at it's location. |
+
 
 Examples can be found in the examples folder.
