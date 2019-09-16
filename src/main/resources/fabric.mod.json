@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Function API",
-  "description": "Allows function files to hook into the game via different events.",
+  "description": "Allows function files to hook into the game via different events. Works with tagged Cotton-scripting scripts as well, if it's installed.",
   "authors": [
     "Frontrider"
   ],

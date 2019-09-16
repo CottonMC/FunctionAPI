@@ -1,9 +1,8 @@
 package hu.frontrider.functionapi.mixin;
 
-import hu.frontrider.functionapi.EventManager;
+import hu.frontrider.functionapi.events.EventManager;
 import hu.frontrider.functionapi.ScriptedObject;
 import hu.frontrider.functionapi.ServerCommandSourceFactory;
-import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,12 +23,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Item.class)
 @Implements(@Interface(iface = ScriptedObject.class, prefix = "api_scripted$"))
-
-public class ItemMixin {
+public abstract class ItemMixin {
 
     private Identifier thisId = null;
-    private EventManager useOnBlock = new EventManager((ScriptedObject) this, "useOnBlock");
-    private EventManager finishUsing = new EventManager((ScriptedObject) this, "finishUsing");
+    private EventManager useOnBlock = new EventManager((ScriptedObject) this, "use-on-block");
+    private EventManager finishUsing = new EventManager((ScriptedObject) this, "finish-using");
 
     @Inject(
             at = @At("TAIL"),
@@ -60,7 +58,7 @@ public class ItemMixin {
      */
     public Identifier api_scripted$getID() {
         if (thisId == null) {
-            thisId = Registry.BLOCK.getId((Block) (Object) this);
+            thisId = Registry.ITEM.getId((Item) (Object) this);
         }
         return thisId;
     }

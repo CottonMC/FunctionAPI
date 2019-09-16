@@ -4,9 +4,9 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.text.Text;
 
 
-public class EventCommandOutput implements CommandOutput {
+public class StandardCommandOutput implements CommandOutput {
 
-    public static CommandOutput INSTANCE = new EventCommandOutput();
+    public static CommandOutput INSTANCE = new StandardCommandOutput();
 
     @Override
     public void sendMessage(Text text) {

@@ -1,9 +1,8 @@
-package hu.frontrider.functionapi;
-
-import net.minecraft.util.Identifier;
+package hu.frontrider.api.api;
 
 /**
  *  Contains information that is required for scripting.
+ *  Implement it if you want your object to work.
  * */
 public interface ScriptedObject {
 

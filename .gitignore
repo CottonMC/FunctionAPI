@@ -3,3 +3,4 @@
 !.gitignore
 build
 run
+private.gradle

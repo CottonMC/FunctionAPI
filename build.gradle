@@ -1,6 +1,8 @@
 plugins {
-	id 'fabric-loom' version '0.2.4-SNAPSHOT'
-	id 'maven-publish'
+    id 'fabric-loom' version '0.2.4-SNAPSHOT'
+    id 'maven-publish'
+    id "com.jfrog.artifactory" version "4.9.0"
+
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -10,89 +12,149 @@ archivesBaseName = "function-api"
 version = project.mod_version
 group = project.maven_group
 
-repositories{
-	mavenCentral()
-	maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
+repositories {
+    mavenCentral()
+    maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
 }
 
+if(rootProject.file('private.gradle').exists()) { //Publishing details
+    apply from: 'private.gradle'
+}
+configurations{
+    apiInclude
+}
 minecraft {
 }
 
 dependencies {
-	//to change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}"
-	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
+    //to change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}"
+    modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modCompile "net.fabricmc.fabric-api:fabric-api-base:0.1.0+f1618918"
-	//these are all optional dependencies used to test
-	modCompile(group: 'io.github.cottonmc.cotton', name: 'cotton-datapack', version: '1.0.0-rc.1', classifier: 'dev')
-	modCompile(group: 'io.github.cottonmc.cotton', name: 'cotton-logging', version: '1.0.0-rc.1', classifier: 'dev')
-	modCompile(group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.1', classifier: 'dev')
-	modCompile(group: 'io.github.cottonmc', name: 'Jankson', version: '1.0.0+j1.1.2', classifier: 'dev')
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modCompile "net.fabricmc.fabric-api:fabric-api-base:0.1.0+f1618918"
+    //these are all optional dependencies used to test
+    modCompile(group: 'io.github.cottonmc.cotton', name: 'cotton-datapack', version: '1.0.0-rc.1', classifier: 'dev')
+    modCompile(group: 'io.github.cottonmc.cotton', name: 'cotton-logging', version: '1.0.0-rc.1', classifier: 'dev')
+    modCompile(group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.1', classifier: 'dev')
+ //   modCompile(group: 'io.github.cottonmc', name: 'cotton-scripting', version: '1.2.0+1.14', classifier: 'dev')
+    modCompile(group: 'io.github.cottonmc', name: 'Jankson', version: '1.0.0+j1.1.2', classifier: 'dev')
+    apiInclude(project(":api"))
+    compile(project(":api"))
+
+    // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
+    // You may need to force-disable transitiveness on them.
 }
 
 processResources {
-	inputs.property "version", project.version
+    inputs.property "version", project.version
 
-	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
-		expand "version": project.version
-	}
+    from(sourceSets.main.resources.srcDirs) {
+        include "fabric.mod.json"
+        expand "version": project.version
+    }
 
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
-	}
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "fabric.mod.json"
+    }
 }
-
+jar{
+    configurations.apiInclude.each{
+        from zipTree(it)
+    }
+}
 // ensure that the encoding is set to UTF-8, no matter what the system default is
 // this fixes some edge cases with special characters not displaying correctly
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
+    options.encoding = "UTF-8"
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 // if it is present.
 // If you remove this task, sources will not be generated.
 task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = "sources"
-	from sourceSets.main.allSource
+    classifier = "sources"
+    from sourceSets.main.allSource
 }
 
 jar {
-	from "LICENSE"
+    from "LICENSE"
 }
 
 // configure the maven publication
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(jar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-		}
-	}
+    publications {
+        maven(MavenPublication) {
+            from components.java
 
-	// select the repositories you want to publish to
-	repositories {
-		// uncomment to publish to the local maven
-		// mavenLocal()
-	}
+            artifactId = project.archives_base_name
+
+
+            pom.withXml {
+                def pomFile = asNode()
+                def depsNode = pomFile.get("dependencies")
+                pomFile.remove(depsNode)
+
+                def newDeps = pomFile.appendNode("dependencies")
+                configurations.modCompile.getResolvedConfiguration().getFirstLevelModuleDependencies().each {
+                    def artifactNode = newDeps.appendNode("dependency")
+                    artifactNode.appendNode('groupId', it.moduleGroup)
+                    artifactNode.appendNode('artifactId', it.moduleName)
+                    artifactNode.appendNode('version', it.moduleVersion)
+                }
+            }
+            artifacts = [
+                    artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}" + ".jar") {
+                        //release jar - file location not provided anywhere in loom
+                        classifier null
+                        builtBy remapJar
+                    },
+                    artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}-dev" + ".jar") {
+                        //release jar - file location not provided anywhere in loom
+                        classifier "dev"
+                        builtBy remapJar
+                    },
+                    artifact(tasks.sourcesJar)
+            ]
+        }
+    }
+    /* Supply an ext block in private.gradle like so:
+       ext { mavenSnapshotDir="file:///some_local_directory_path" }
+     * and then just run "./gradlew publish" to save the artifacts to the specified directory, in a way that they can be
+     * served by apache or your favorite httpd and behave like a maven repo. Complete with verification hashes.
+     */
+    repositories {
+        if (rootProject.ext.has("localMavenUrl")) {
+            maven {
+                url = rootProject.ext.localMavenUrl
+            }
+        }
+    }
 }
 
-configurations {
-	mod
-}
+artifactory {
+    if (project.hasProperty("artifactoryUsername")) {
+        contextUrl = 'http://server.bbkr.space:8081/artifactory/'
+        publish {
+            repository {
+                if (version.contains("SNAPSHOT")) {
+                    repoKey = "libs-snapshot"
+                } else {
+                    repoKey = "libs-release"
+                }
+                username = artifactoryUsername
+                password = artifactoryPassword
+            }
+            defaults {
+                publications('maven')
 
-artifacts {
-	mod file("build/api-mod-0.0.1-SNAPSHOT.jar")
-	
+                publishArtifacts = true
+                publishPom = true
+            }
+        }
+    } else {
+        println "Cannot configure artifactory; please define ext.artifactoryUsername and ext.artifactoryPassword before running artifactoryPublish"
+    }
 }

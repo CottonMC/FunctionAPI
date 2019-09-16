@@ -26,7 +26,7 @@ public class ServerCommandSourceFactory {
     }
 
     ServerCommandSource create(MinecraftServer minecraftServer, Vec3d position, Vec2f rotation, ServerWorld serverWorld, int permissionLevel, String simpleName, Text name,  Entity entity){
-        return new ServerCommandSource(EventCommandOutput.INSTANCE,position,rotation,serverWorld,permissionLevel,simpleName,name,minecraftServer,entity);
+        return new ServerCommandSource(StandardCommandOutput.INSTANCE,position,rotation,serverWorld,permissionLevel,simpleName,name,minecraftServer,entity);
     }
 
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Block block, BlockPos blockPos) {
