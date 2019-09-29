@@ -1,9 +1,7 @@
 package hu.frontrider.functionapi.mixin;
 
-import hu.frontrider.functionapi.events.EntityEventManager;
-import hu.frontrider.functionapi.ScriptedObject;
+import hu.frontrider.functionapi.events.GlobalEventContainer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.level.LevelProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,16 +19,8 @@ public abstract class ServerMixin {
      * */
     @Inject(at=@At("TAIL"),method = "reloadDataPacks")
     private void reload(LevelProperties levelProperties_1, CallbackInfo ci){
-        /*
-        * marking registry objects for reload
-        * */
-        Registry.BLOCK.stream().parallel().filter(obj-> obj instanceof ScriptedObject).forEach(obj -> ((ScriptedObject)obj).markDirty());
-        Registry.ITEM.stream().parallel().filter(obj-> obj instanceof ScriptedObject).forEach(obj -> ((ScriptedObject)obj).markDirty());
-
-        /*
-         * we mark the entity event manager for reload.
-         * */
-        EntityEventManager.getINSTANCE().markDirty();
+        //we mark all registered handlers as dirty.
+        GlobalEventContainer.getInstance().markDirty();
     }
 
 

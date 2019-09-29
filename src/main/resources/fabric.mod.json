@@ -18,13 +18,13 @@
 
   "environment": "*",
   "entrypoints": {
-
+    "main":[ "hu.frontrider.functionapi.FunctionAPI"]
   },
   "mixins": [
     "function_api.mixins.json"
   ],
 
-  "requires": {
+  "depends": {
     "fabricloader": ">=0.4.0",
     "fabric": "*"
   },

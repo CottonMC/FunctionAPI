@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * Stores all of the entity related events.
- * Used, because tne entity registry does not contain the actual entity instances, and the events themselves are bound to entity types, not the instances.
+ * Used, because tne entity registry does not contain the actual entity instances, and the events themselves are bound to entity types.
  */
 public class EntityEventManager {
 
@@ -32,7 +32,7 @@ public class EntityEventManager {
      * Fires off entity events, if the event manager is missing, than it is created.
      */
     public void fire(Identifier type, Identifier eventID, ServerCommandSource commandContext) {
-        Map<Identifier, EventManager> managerMap = events.computeIfAbsent(type, k -> new HashMap<>());
+        Map<Identifier, EventManager> managerMap = events.computeIfAbsent(eventID, k -> new HashMap<>());
 
         EventManager eventManager = managerMap.get(eventID);
         if (eventManager == null) {
@@ -42,13 +42,14 @@ public class EntityEventManager {
         eventManager.fire(commandContext);
     }
 
-    public void fire(Entity target,Identifier eventID){
+    public void fire(Entity target, Identifier eventID) {
 
-        if (target.world instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(target.getServer(), (ServerWorld) target.world, target);
+        if (!target.world.isClient()) {
+            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(target.world.getServer(), (ServerWorld) target.getEntityWorld(), target);
             EntityEventManager.getINSTANCE().fire(((ScriptedObject) target).getID(), eventID, serverCommandSource);
         }
     }
+
     /**
      * to mark it for reload, we simply clear off everything.
      */

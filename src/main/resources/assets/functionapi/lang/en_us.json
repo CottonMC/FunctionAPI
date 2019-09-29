@@ -1,0 +1,9 @@
+{
+  "hu.frontrider.functionapi.command.no_event_found": "Event not found.",
+  "hu.frontrider.functionapi.command.event_exists": "Event already exists.",
+  "hu.frontrider.functionapi.command.all_events_enabled": "All events enabled!",
+  "hu.frontrider.functionapi.command.all_events_disabled": "All events disabled!",
+
+  "hu.frontrider.functionapi.command.event_enabled": "Event enabled!",
+  "hu.frontrider.functionapi.command.event_disabled": "Event disabled!"
+}

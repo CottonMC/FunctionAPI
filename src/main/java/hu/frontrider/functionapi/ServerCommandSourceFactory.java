@@ -1,6 +1,7 @@
 package hu.frontrider.functionapi;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -21,11 +22,11 @@ public class ServerCommandSourceFactory {
     public static ServerCommandSourceFactory INSTANCE = new ServerCommandSourceFactory();
     private ServerCommandSourceFactory(){};
 
-    ServerCommandSource create(MinecraftServer minecraftServer, Vec3d position, Vec2f rotation, ServerWorld serverWorld, int permissionLevel, String simpleName, Text name){
+    public ServerCommandSource create(MinecraftServer minecraftServer, Vec3d position, Vec2f rotation, ServerWorld serverWorld, int permissionLevel, String simpleName, Text name){
         return create(minecraftServer, position, rotation, serverWorld, permissionLevel, simpleName, name,null);
     }
 
-    ServerCommandSource create(MinecraftServer minecraftServer, Vec3d position, Vec2f rotation, ServerWorld serverWorld, int permissionLevel, String simpleName, Text name,  Entity entity){
+    public ServerCommandSource create(MinecraftServer minecraftServer, Vec3d position, Vec2f rotation, ServerWorld serverWorld, int permissionLevel, String simpleName, Text name,  Entity entity){
         return new ServerCommandSource(StandardCommandOutput.INSTANCE,position,rotation,serverWorld,permissionLevel,simpleName,name,minecraftServer,entity);
     }
 

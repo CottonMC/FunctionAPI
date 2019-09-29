@@ -1,5 +1,6 @@
 package hu.frontrider.functionapi.events.runners;
 
+
 import net.minecraft.util.Identifier;
 
 /**
@@ -11,4 +12,11 @@ public interface EventRunnerFactory {
      * return a new runner for this ID.
      * */
     EventRunner newEvent(Identifier id);
+
+    /**
+     * Checks if the runner should be used. Returns true by default, if the runner should be disabled then it returns false.
+     * */
+    default boolean enabled(){
+        return true;
+    }
 }

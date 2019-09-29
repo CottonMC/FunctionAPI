@@ -1,0 +1,11 @@
+{
+  "hu.frontrider.functionapi.command.no_event_found": "Ez az esemény nem létezik.",
+  "hu.frontrider.functionapi.command.event_exists": "Ez az esemény már létezik.",
+
+  "hu.frontrider.functionapi.command.all_events_enabled": "Minden esemény bekapcsolva!",
+  "hu.frontrider.functionapi.command.all_events_disabled": "Minden esemény kikapcsolva!",
+
+
+  "hu.frontrider.functionapi.command.event_enabled": "Esemény bekapcsolva!",
+  "hu.frontrider.functionapi.command.event_disabled": "Esemény kikapcsolva!"
+}

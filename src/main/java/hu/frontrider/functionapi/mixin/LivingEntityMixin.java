@@ -1,76 +1,74 @@
 package hu.frontrider.functionapi.mixin;
 
-import hu.frontrider.functionapi.events.EntityEventManager;
+import hu.frontrider.functionapi.FunctionAPI;
 import hu.frontrider.functionapi.ScriptedObject;
 import hu.frontrider.functionapi.ServerCommandSourceFactory;
+import hu.frontrider.functionapi.events.EventManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 @Implements(@Interface(iface = ScriptedObject.class, prefix = "api_scripted$"))
-public abstract class LivingEntityMixin {
+public abstract class LivingEntityMixin extends Entity {
 
-    @Shadow protected boolean dead;
-    private Identifier thisId = null;
+    @Shadow
+    protected boolean dead;
 
-    private Identifier onAttackingID = getID("on_attacking");
-    private Identifier deathID = getID("on_death");
+    private EventManager attackingEvent;
+    private EventManager deathEvent;
 
-    @Inject(at = @At("TAIL"),method = "onAttacking")
-    private void onAttacking(Entity entity_1, CallbackInfo ci){
-        Entity thiz = (Entity) (Object) this;
-        EntityEventManager.getINSTANCE().fire(thiz,onAttackingID);
+    private Identifier eventTypeID = new Identifier(FunctionAPI.MODID, "livingentity");
+
+    public LivingEntityMixin(EntityType<?> entityType_1, World world_1) {
+        super(entityType_1, world_1);
+    }
+
+
+    @Inject(at = @At("HEAD"), method = "onAttacking")
+    private void onAttacking(Entity entity_1, CallbackInfo ci) {
+        if (attackingEvent == null)
+            attackingEvent = new EventManager((ScriptedObject) this, "attacking");
+
+        if (world instanceof ServerWorld && !dead) {
+            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) getEntityWorld(), this);
+            attackingEvent.fire(serverCommandSource);
+        }
     }
 
     /**
      * Because the entity is gone when we do the call,
-     * */
-    @Inject(at = @At("TAIL"),method = "onDeath")
-    private void onDeath(DamageSource damageSource_1, CallbackInfo ci){
-        Entity entity = (Entity) (Object) this;
-        World world = entity.world;
-        if(world instanceof ServerWorld && !dead){
-            BlockPos blockPos = entity.getBlockPos();
+     */
+    @Inject(at = @At("HEAD"), method = "onDeath")
+    private void onDeath(DamageSource damageSource_1, CallbackInfo ci) {
+        if (deathEvent == null)
+            deathEvent = new EventManager((ScriptedObject) this, "death");
 
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(entity.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos);
-            EntityEventManager.getINSTANCE().fire(this.api_scripted$getID(),deathID,serverCommandSource);
-        }
-
+        ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), this.getPos(), getRotationClient(), (ServerWorld) getEntityWorld(), 2, getEntityName(), getName());
+        deathEvent.fire(serverCommandSource);
     }
 
-
-    /**
-     * Dynamically gets the id of this block instance.
-     */
     public Identifier api_scripted$getID() {
-        if (thisId == null) {
-            thisId = Registry.ENTITY_TYPE.getId(((Entity) (Object) this).getType());
-        }
-        return thisId;
-    }
-
-    /**
-     * called when the block should be reloaded.
-     */
-    public void api_scripted$markDirty() {
+        return eventTypeID;
     }
 
     public String api_scripted$getType() {
-        return "entity";
+        return "livingentity";
     }
 
-    protected Identifier getID(String eventName) {
-        Identifier targetID = api_scripted$getID();
-        return new Identifier("api", api_scripted$getType() + "-" + eventName + "-" + targetID.getNamespace() + "-" + targetID.getPath());
-    }}
+    private Identifier getID(String eventName) {
+        return new Identifier(FunctionAPI.MODID, "function_api/livingentity/livingentity/" + eventName);
+    }
+}
