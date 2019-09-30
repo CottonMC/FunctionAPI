@@ -277,7 +277,13 @@ def livingEntityEvents = [
         "attacking","death"
 ]
 
+task removeGeneratedData(type:Delete){
+    delete project.ext.generatedResources
+}
+
 task generateEntityEventFunctions {
+    //we remove the generated folder, otherwise the check events become too long from constant appending.
+    dependsOn removeGeneratedData
     doFirst {
         def generatedResources = project.ext.generatedResources + "/data/functionapi/functions/api/entity"
         def generatedMinecraftResources = project.ext.generatedResources + "/data/minecraft/functions/function_api/entity"
@@ -313,24 +319,21 @@ task generateEntityEventFunctions {
 
         }
 
-        generatedResources = project.ext.generatedResources + "/data/functionapi/functions/api/livingentity"
-        generatedMinecraftResources = project.ext.generatedResources + "/data/minecraft/functions/function_api/livingentity"
-
         livingEntityEvents.each {eventName->
             (livingEntity).each { entityName ->
 
                 file(generatedMinecraftResources + "/$entityName/run_${entityName}_${eventName}.mcfunction").with {
                     parentFile.mkdirs()
-                    it.write("event create minecraft:$entityName $eventName livingentity\n" +
-                            "event run minecraft:function_api/livingentity/$entityName/$eventName")
+                    it.write("event create minecraft:$entityName $eventName entity\n" +
+                            "event run minecraft:function_api/entity/$entityName/$eventName")
                 }
 
                 file(generatedResources + "/check_${eventName}.mcfunction").with {
                     parentFile.mkdirs()
-                    it.append("execute if entity @s[type=$entityName] run function minecraft:function_api/livingentity/$entityName/run_${entityName}_${eventName}\n")
+                    it.append("execute if entity @s[type=$entityName] run function minecraft:function_api/entity/$entityName/run_${entityName}_${eventName}\n")
                 }
             }
-            def tagFolder = project.ext.generatedResources + "/data/functionapi/tags/functions/function_api/livingentity/livingentity/"
+            def tagFolder = project.ext.generatedResources + "/data/functionapi/tags/functions/function_api/entity/entity/"
 
             file(tagFolder + "/${eventName}.json").with {
                 it.parentFile.mkdirs()
@@ -339,7 +342,7 @@ task generateEntityEventFunctions {
 {
   "replace": false,
   "values": [
-     "functionapi:api/livingentity/check_${eventName}"
+     "functionapi:api/entity/check_${eventName}"
   ]
 }
 """)

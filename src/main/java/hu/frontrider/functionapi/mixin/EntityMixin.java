@@ -13,6 +13,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,11 +30,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Implements(@Interface(iface = ScriptedObject.class, prefix = "api_scripted$"))
 public abstract class EntityMixin {
 
-    private EventManager tick;
-    private EventManager swimStart;
-    private EventManager damage;
-    private EventManager killedOther;
-    private EventManager struckByLightning;
+    private static EventManager tick;
+    private static EventManager swimStart;
+    private static EventManager damage;
+    private static EventManager killedOther;
+    private static EventManager struckByLightning;
 
     @Shadow
     public abstract MinecraftServer getServer();
@@ -41,9 +42,9 @@ public abstract class EntityMixin {
     @Shadow
     public World world;
 
-    @Shadow
-    public abstract World getEntityWorld();
 
+    @Shadow
+    public DimensionType dimension;
     private Identifier eventTypeID = new Identifier(FunctionAPI.MODID, "entity");
 
     @Inject(
@@ -54,10 +55,9 @@ public abstract class EntityMixin {
         if (tick == null)
             tick = new EventManager((ScriptedObject) this, "tick");
 
-        if (world instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) getEntityWorld(), (Entity) (Object) this);
-            tick.fire(serverCommandSource);
-        }
+
+        fireEventOnServer(tick);
+
     }
 
     @Inject(
@@ -69,22 +69,17 @@ public abstract class EntityMixin {
         if (swimStart == null)
             swimStart = new EventManager((ScriptedObject) this, "swim_start");
 
-        if (world instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) getEntityWorld(), (Entity) (Object) this);
-            swimStart.fire(serverCommandSource);
-        }
+        fireEventOnServer(swimStart);
+
     }
 
     @Inject(at = @At("HEAD"), method = "damage")
     private void damaged(DamageSource damageSource_1, float float_1, CallbackInfoReturnable<Boolean> cir) {
-
         if (damage == null)
             damage = new EventManager((ScriptedObject) this, "damage");
 
-        if (world instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) getEntityWorld(), (Entity) (Object) this);
-            damage.fire(serverCommandSource);
-        }
+        fireEventOnServer(damage);
+
     }
 
     @Inject(at = @At("HEAD"), method = "onKilledOther")
@@ -92,10 +87,9 @@ public abstract class EntityMixin {
         if (killedOther == null)
             killedOther = new EventManager((ScriptedObject) this, "killed_other");
 
-        if (world instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) getEntityWorld(), (Entity) (Object) this);
-            killedOther.fire(serverCommandSource);
-        }
+
+        fireEventOnServer(killedOther);
+
     }
 
     @Inject(at = @At("HEAD"), method = "onStruckByLightning")
@@ -103,15 +97,19 @@ public abstract class EntityMixin {
         if (struckByLightning == null)
             struckByLightning = new EventManager((ScriptedObject) this, "struck_by_lightning");
 
-        if (world instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) getEntityWorld(), (Entity) (Object) this);
-            struckByLightning.fire(serverCommandSource);
+        fireEventOnServer(struckByLightning);
+    }
+
+    private void fireEventOnServer(EventManager eventManager) {
+
+        if (!world.isClient()) {
+            MinecraftServer server = getServer();
+            ServerWorld world = server.getWorld(dimension);
+            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(server, world, (Entity) (Object) this);
+            eventManager.fire(serverCommandSource);
         }
     }
 
-    /**
-     * Dynamically gets the id of this block instance.
-     */
     public Identifier api_scripted$getID() {
         return eventTypeID;
     }

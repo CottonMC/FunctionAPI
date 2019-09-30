@@ -50,4 +50,9 @@ public class ServerCommandRunner implements EventRunner {
         functions.clear();
     }
 
+    @Override
+    public boolean hasEvents() {
+        return !functions.isEmpty();
+    }
+
 }

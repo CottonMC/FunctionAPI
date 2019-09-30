@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -19,6 +20,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 @Implements(@Interface(iface = ScriptedObject.class, prefix = "api_scripted$"))
@@ -27,10 +29,13 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow
     protected boolean dead;
 
-    private EventManager attackingEvent;
-    private EventManager deathEvent;
 
-    private Identifier eventTypeID = new Identifier(FunctionAPI.MODID, "livingentity");
+    private static EventManager attackingEvent;
+    private static EventManager deathEvent;
+    private static EventManager damage;
+
+
+    private Identifier eventTypeID = new Identifier(FunctionAPI.MODID, "entity");
 
     public LivingEntityMixin(EntityType<?> entityType_1, World world_1) {
         super(entityType_1, world_1);
@@ -42,10 +47,7 @@ public abstract class LivingEntityMixin extends Entity {
         if (attackingEvent == null)
             attackingEvent = new EventManager((ScriptedObject) this, "attacking");
 
-        if (world instanceof ServerWorld && !dead) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) getEntityWorld(), this);
-            attackingEvent.fire(serverCommandSource);
-        }
+        fireEventOnServer(attackingEvent);
     }
 
     /**
@@ -56,8 +58,26 @@ public abstract class LivingEntityMixin extends Entity {
         if (deathEvent == null)
             deathEvent = new EventManager((ScriptedObject) this, "death");
 
-        ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), this.getPos(), getRotationClient(), (ServerWorld) getEntityWorld(), 2, getEntityName(), getName());
-        deathEvent.fire(serverCommandSource);
+        fireEventOnServer(deathEvent);
+    }
+
+
+    @Inject(at = @At("HEAD"), method = "damage")
+    private void damaged(DamageSource damageSource_1, float float_1, CallbackInfoReturnable<Boolean> cir) {
+        if (damage == null)
+            damage = new EventManager((ScriptedObject) this, "damage");
+
+        fireEventOnServer(damage);
+
+    }
+    private void fireEventOnServer(EventManager eventManager) {
+
+        if (!world.isClient() && !dead) {
+            MinecraftServer server = getServer();
+            ServerWorld world = server.getWorld(dimension);
+            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(server, world, this);
+            eventManager.fire(serverCommandSource);
+        }
     }
 
     public Identifier api_scripted$getID() {
@@ -65,10 +85,8 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     public String api_scripted$getType() {
-        return "livingentity";
+        return "entity";
     }
 
-    private Identifier getID(String eventName) {
-        return new Identifier(FunctionAPI.MODID, "function_api/livingentity/livingentity/" + eventName);
-    }
+
 }

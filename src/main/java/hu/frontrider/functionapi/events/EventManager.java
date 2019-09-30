@@ -52,8 +52,8 @@ public class EventManager {
         GlobalEventContainer.getInstance().addManager(this);
     }
 
-    public void serverInit(MinecraftServer server){
-        GlobalEventContainer.getInstance().callbackInit(identifier,server);
+    public void serverInit(MinecraftServer server) {
+        GlobalEventContainer.getInstance().callbackInit(identifier, server);
     }
 
     /**
@@ -68,8 +68,6 @@ public class EventManager {
             }
         }
     }
-
-
 
     public void markDirty() {
         for (EventRunner eventRunner : getRunners()) {
@@ -110,4 +108,20 @@ public class EventManager {
         enabled = false;
     }
 
+    public boolean hasEvents() {
+        //if it's disabled, then we say that we have no events.
+        if(!enabled){
+            return false;
+        }
+        //safety check.
+        if (eventRunners != null) {
+            //if any runner has events, return true.
+            for (EventRunner eventRunner : eventRunners) {
+                if (eventRunner.hasEvents())
+                    return true;
+            }
+        }
+        //if we have no runners with events, return false.
+        return false;
+    }
 }

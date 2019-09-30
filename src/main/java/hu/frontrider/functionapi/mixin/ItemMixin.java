@@ -1,8 +1,8 @@
 package hu.frontrider.functionapi.mixin;
 
-import hu.frontrider.functionapi.events.EventManager;
 import hu.frontrider.functionapi.ScriptedObject;
 import hu.frontrider.functionapi.ServerCommandSourceFactory;
+import hu.frontrider.functionapi.events.EventManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -13,14 +13,12 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -32,12 +30,12 @@ public abstract class ItemMixin {
     private Identifier thisId = null;
     private EventManager useOnBlock;
     private EventManager finishUsing;
-    private EventManager use = new EventManager((ScriptedObject) this, "use");
-
+    private EventManager useOnEntiy;
 
     @Inject(
             at = @At("TAIL"),
-            method = "useOnBlock"
+            method = "useOnBlock",
+            cancellable = true
     )
     private void useOnBlock(ItemUsageContext itemUsageContext, CallbackInfoReturnable<ActionResult> cir){
 
@@ -51,33 +49,32 @@ public abstract class ItemMixin {
             ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos,itemUsageContext.getPlayer());
             useOnBlock.fire(commandContext);
         }
+
+        if(useOnBlock.hasEvents()){
+            cir.setReturnValue(ActionResult.SUCCESS);
+        }
     }
+
 
     @Inject(
             at = @At("TAIL"),
-            method = "finishUsing"
+            method = "useOnEntity",
+            cancellable = true
     )
-    private void finishUsing(ItemStack itemStack_1, World world, LivingEntity livingEntity_1, CallbackInfoReturnable<ItemStack> cir){
-        if(finishUsing == null){
-            finishUsing = new EventManager((ScriptedObject) this, "finish_using");
+    private void useOnEntity(ItemStack itemStack_1, PlayerEntity playerEntity, LivingEntity livingEntity_1, Hand hand_1, CallbackInfoReturnable<Boolean> cir){
+
+        World world = livingEntity_1.world;
+        if(useOnEntiy == null){
+            useOnEntiy = new EventManager((ScriptedObject) this, "use_on_entity");
         }
+
         if (world instanceof ServerWorld) {
             ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, livingEntity_1);
-            finishUsing.fire(commandContext);
-        }
-    }
-    @Inject(
-            at = @At("TAIL"),
-            method = "use"
-    )
-    private void use(World world, PlayerEntity playerEntity, Hand hand_1, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir){
-        if(use == null){
-            use = new EventManager((ScriptedObject) this, "use");
+            useOnEntiy.fire(commandContext);
         }
 
-        if (world instanceof ServerWorld) {
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, playerEntity);
-            use.fire(commandContext);
+        if(useOnEntiy.hasEvents()){
+            cir.setReturnValue(true);
         }
     }
 

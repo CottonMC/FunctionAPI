@@ -3,7 +3,7 @@
   "package": "hu.frontrider.functionapi.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "BlockMixin","ServerMixin","ItemMixin"
+    "BlockMixin","ServerMixin","ItemMixin","EntityMixin","LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

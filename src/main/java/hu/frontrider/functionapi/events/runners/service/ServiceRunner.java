@@ -27,5 +27,9 @@ public class ServiceRunner implements EventRunner {
     @Override
     public void markDirty() {
     }
+    @Override
+    public boolean hasEvents() {
+        return !handlers.isEmpty();
+    }
 
 }
