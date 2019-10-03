@@ -1,6 +1,7 @@
 package hu.frontrider.functionapi.events.runners.service;
 
 import hu.frontrider.functionapi.events.runners.EventRunner;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 
 import java.util.List;
@@ -27,6 +28,12 @@ public class ServiceRunner implements EventRunner {
     @Override
     public void markDirty() {
     }
+
+    @Override
+    public void reload(MinecraftServer server) {
+
+    }
+
     @Override
     public boolean hasEvents() {
         return !handlers.isEmpty();

@@ -27,6 +27,13 @@ public class EventCommand {
         commandDispatcher_1.register(
                 CommandManager.literal("event")
                         .requires((serverCommandSource_1) -> serverCommandSource_1.hasPermissionLevel(2))
+                        .then(CommandManager.literal("clear")
+                                .executes(commandContext -> {
+                                    GlobalEventContainer.getInstance().clean();
+                                    commandContext.getSource()
+                                            .sendFeedback(new TranslatableText("hu.frontrider.functionapi.command.cleared"), true);
+                                    return 1;
+                                }))
                         .then(CommandManager.literal("run")
                                 .then(CommandManager.argument("name", new IdentifierArgumentType())
                                         .suggests(SUGGESTION_PROVIDER)
@@ -69,7 +76,7 @@ public class EventCommand {
                                                 commandContext.getSource()
                                                         .sendFeedback(new TranslatableText("hu.frontrider.functionapi.command.event_enabled"), true);
                                             } else {
-                                                commandContext.getSource().sendError(new TranslatableText("hu.frontrider.functionapi.command.event_exists"));
+                                                commandContext.getSource().sendError(new TranslatableText("hu.frontrider.functionapi.command.no_event_found"));
                                             }
                                             return 1;
                                         })))

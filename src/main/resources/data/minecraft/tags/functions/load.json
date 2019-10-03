@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "functionapi:on-first-load"
+    "functionapi:on-first-load",
+    "functionapi:load-event"
   ]
 }

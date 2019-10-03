@@ -17,7 +17,7 @@ public class ServerCommandRunner implements EventRunner {
     private List<CommandFunction> functions = new LinkedList<>();
 
     ServerCommandRunner(Identifier identifier){
-        eventID = identifier;
+        eventID = new Identifier(identifier.getNamespace(),"function_api/"+identifier.getPath());
     }
 
     @Override
@@ -35,7 +35,8 @@ public class ServerCommandRunner implements EventRunner {
      * checks if this manager is dirty, and if it is, reloads the functions.
      *
      * @param server*/
-    private void reload(MinecraftServer server) {
+    @Override
+    public void reload(MinecraftServer server) {
         if (dirty) {
             CommandFunctionManager commandFunctionManager = server.getCommandFunctionManager();
             Collection<CommandFunction> functions = commandFunctionManager.getTags().getOrCreate(eventID).values();
@@ -54,5 +55,6 @@ public class ServerCommandRunner implements EventRunner {
     public boolean hasEvents() {
         return !functions.isEmpty();
     }
+
 
 }

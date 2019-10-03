@@ -265,7 +265,8 @@ def livingEntity = [
         "polar_bear",
         "llama",
         "parrot",
-        "villager"
+        "villager",
+        "player"
 ]
 
 
@@ -294,12 +295,12 @@ task generateEntityEventFunctions {
                 file(generatedMinecraftResources + "/$entityName/run_${entityName}_${eventName}.mcfunction").with {
                     parentFile.mkdirs()
                     it.write("event create minecraft:$entityName $eventName entity\n" +
-                            "event run minecraft:function_api/entity/$entityName/$eventName")
+                            "event run minecraft:entity/$entityName/$eventName")
                 }
 
                 file(generatedResources + "/check_${eventName}.mcfunction").with {
                     parentFile.mkdirs()
-                    it.append("execute if entity @s[type=$entityName] run function minecraft:function_api/entity/$entityName/run_${entityName}_${eventName}\n")
+                    it.append("execute if entity @s[type=minecraft:$entityName] run function minecraft:function_api/entity/$entityName/run_${entityName}_${eventName}\n")
                 }
             }
             def tagFolder = project.ext.generatedResources + "/data/functionapi/tags/functions/function_api/entity/entity/"
@@ -325,12 +326,12 @@ task generateEntityEventFunctions {
                 file(generatedMinecraftResources + "/$entityName/run_${entityName}_${eventName}.mcfunction").with {
                     parentFile.mkdirs()
                     it.write("event create minecraft:$entityName $eventName entity\n" +
-                            "event run minecraft:function_api/entity/$entityName/$eventName")
+                            "event run minecraft:entity/$entityName/$eventName")
                 }
 
                 file(generatedResources + "/check_${eventName}.mcfunction").with {
                     parentFile.mkdirs()
-                    it.append("execute if entity @s[type=$entityName] run function minecraft:function_api/entity/$entityName/run_${entityName}_${eventName}\n")
+                    it.append("execute if entity @s[type=minecraft:$entityName] run function minecraft:function_api/entity/$entityName/run_${entityName}_${eventName}\n")
                 }
             }
             def tagFolder = project.ext.generatedResources + "/data/functionapi/tags/functions/function_api/entity/entity/"

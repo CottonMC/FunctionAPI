@@ -5,5 +5,9 @@
   "hu.frontrider.functionapi.command.all_events_disabled": "All events disabled!",
 
   "hu.frontrider.functionapi.command.event_enabled": "Event enabled!",
-  "hu.frontrider.functionapi.command.event_disabled": "Event disabled!"
+  "hu.frontrider.functionapi.command.event_disabled": "Event disabled!",
+
+  "hu.frontrider.functionapi.command.cleared": "Removed all EventHandlers! Custom handlers need to be re-registered!",
+  "hu.frontrider.functionapi.script_error_in": "Script execution error in %1! Errors have been printed to the server console.",
+  "hu.frontrider.functionapi.script_error": "Script execution error! Errors have been printed to the server console."
 }

@@ -32,14 +32,14 @@ public class ServerCommandSourceFactory {
 
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Block block, BlockPos blockPos) {
         String translate = Language.getInstance().translate(block.getTranslationKey());
-        return create(minecraftServer, new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 10, translate, new LiteralText(translate));
+        return create(minecraftServer, new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate));
     }
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Entity entity) {
-        return create(minecraftServer, entity.getPos(), entity.getRotationClient(), serverWorld, 10, entity.getName().getString(), entity.getName(),entity);
+        return create(minecraftServer, entity.getPos(), entity.getRotationClient(), serverWorld, 2, entity.getName().getString(), entity.getName(),entity);
     }
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Block block, BlockPos blockPos,Entity entity) {
         String translate = Language.getInstance().translate(block.getTranslationKey());
-        return create(minecraftServer, new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 10, translate, new LiteralText(translate),entity);
+        return create(minecraftServer, new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate),entity);
     }
 
 }

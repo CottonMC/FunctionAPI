@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-
 /**
  * Handles an event
  */
@@ -22,7 +21,7 @@ public class EventManager {
      * The different runners allow us to hook into the event with different techniques.
      * Runners are build by factories, that are loaded as java services.
      */
-    private static LinkedList<EventRunnerFactory> eventRunnerFactories = new LinkedList<>();
+    private static final LinkedList<EventRunnerFactory> eventRunnerFactories = new LinkedList<>();
 
     static {
         ServiceLoader<EventRunnerFactory> runnerFactories = ServiceLoader.load(EventRunnerFactory.class);
@@ -32,39 +31,58 @@ public class EventManager {
         });
     }
 
+    //the object that the event targets
     private final ScriptedObject target;
-    private String eventName;
-    private Identifier identifier = null;
+    /*the id of the event*/
+    private final Identifier identifier;
+    /**
+     * If the handler is a singleton,
+     * */
+    private final boolean isSingleton;
 
     private boolean enabled = true;
 
     private List<EventRunner> eventRunners;
 
-    public EventManager(ScriptedObject target, String eventName) {
-        this.target = target;
-        this.eventName = eventName;
-        GlobalEventContainer.getInstance().addManager(this);
+    public EventManager(ScriptedObject target, String eventName,boolean isSingleton) {
+        this(target, new Identifier(target.getID().getNamespace(), target.getType() + "/" + target.getID().getPath() + "/" + eventName),isSingleton);
     }
-
+    public EventManager(ScriptedObject target, String eventName) {
+        this(target, new Identifier(target.getID().getNamespace(), target.getType() + "/" + target.getID().getPath() + "/" + eventName),false);
+    }
     public EventManager(ScriptedObject target, Identifier identifier) {
+        this(target,identifier,false);
+    }
+    public EventManager(ScriptedObject target, Identifier identifier,boolean isSingleton) {
         this.target = target;
         this.identifier = identifier;
+        this.isSingleton = isSingleton;
         GlobalEventContainer.getInstance().addManager(this);
+
     }
 
     public void serverInit(MinecraftServer server) {
-        GlobalEventContainer.getInstance().callbackInit(identifier, server);
+        GlobalEventContainer.getInstance().initCallback(identifier, server);
     }
+
 
     /**
      * call it with the correct context when the event should run.
      */
     public void fire(ServerCommandSource commandContext) {
         if (enabled) {
-            for (EventRunner eventRunner : getRunners()) {
+            GlobalEventContainer.getInstance().addIfMissing(this);
+
+            if(isSingleton) {
                 commandContext.getMinecraftServer().send(new ServerTask(1, () -> {
-                    eventRunner.fire(commandContext);
+                    getRunners().get(0).fire(commandContext);
                 }));
+            }else {
+                for (EventRunner eventRunner : getRunners()) {
+                    commandContext.getMinecraftServer().send(new ServerTask(1, () -> {
+                        eventRunner.fire(commandContext);
+                    }));
+                }
             }
         }
     }
@@ -74,15 +92,6 @@ public class EventManager {
             eventRunner.markDirty();
         }
     }
-
-    public Identifier getID() {
-        if (identifier == null) {
-            Identifier targetID = target.getID();
-            this.identifier = new Identifier(targetID.getNamespace(), "function_api/" + target.getType() + "/" + targetID.getPath() + "/" + eventName);
-        }
-        return identifier;
-    }
-
 
     /**
      * Returns a list of the available runners.
@@ -94,7 +103,7 @@ public class EventManager {
             eventRunnerFactories
                     .iterator()
                     .forEachRemaining(eventRunnerFactory -> {
-                        eventRunners.add(eventRunnerFactory.newEvent(getID()));
+                        eventRunners.add(eventRunnerFactory.newEvent(identifier));
                     });
         }
         return eventRunners;
@@ -110,7 +119,7 @@ public class EventManager {
 
     public boolean hasEvents() {
         //if it's disabled, then we say that we have no events.
-        if(!enabled){
+        if (!enabled) {
             return false;
         }
         //safety check.
@@ -123,5 +132,18 @@ public class EventManager {
         }
         //if we have no runners with events, return false.
         return false;
+    }
+
+    public boolean isSingleton(){
+            return isSingleton;
+    }
+
+    public Identifier getID() {
+        return identifier;
+    }
+
+    public boolean hasEvents(MinecraftServer server) {
+        eventRunners.forEach(eventRunner -> eventRunner.reload(server));
+        return hasEvents();
     }
 }

@@ -1,10 +1,11 @@
 package hu.frontrider.functionapi.events.runners;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 
 /**
- * Wraps a specific way to handle events.
- *
+ * Defines a way to handle events.
+ * has an instance inside every handled event.
  * */
 public interface EventRunner {
 
@@ -19,5 +20,14 @@ public interface EventRunner {
      * */
     void markDirty();
 
+    /**
+     * can be used to manually reload the manager. Should run at the beginning of the "fire" method as well.
+     * */
+    void reload(MinecraftServer server);
+
+    /**
+    * @return false, if the handler is empty. used for things like item usage animations.
+    * */
     boolean hasEvents();
+
 }

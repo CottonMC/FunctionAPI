@@ -7,5 +7,9 @@
 
 
   "hu.frontrider.functionapi.command.event_enabled": "Esemény bekapcsolva!",
-  "hu.frontrider.functionapi.command.event_disabled": "Esemény kikapcsolva!"
+  "hu.frontrider.functionapi.command.event_disabled": "Esemény kikapcsolva!",
+
+  "hu.frontrider.functionapi.command.cleared": "Minden esemény eltávolítva! Az egyedi eseményeket újra létre kell hozni!",
+  "hu.frontrider.functionapi.script_error_in": "Script hiba: %1! Ellenőrizd a szerverlogot!",
+  "hu.frontrider.functionapi.script_error": "Script hiba lépett fel! Ellenőrizd a szerverlogot!"
 }

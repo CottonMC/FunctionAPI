@@ -23,5 +23,4 @@ public abstract class ServerMixin {
         GlobalEventContainer.getInstance().markDirty();
     }
 
-
 }
