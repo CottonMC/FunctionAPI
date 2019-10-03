@@ -9,10 +9,6 @@ dirt block is placed down, use `minecraft:function_api/block/dirt/placed
 minecraft, under that functions (then)-> function_api-> block-> dirt->
 then the placed.json file contains the tag
 
-
-Entity events are listed, but they are disabled as of 1.2.0 until 
-further notice!
-
 ## Events
 
 | Event name                                         | action                                                                                                                                                                                                                                                                                             | included objects                                                                                                                                                                                                                  |
@@ -51,20 +47,14 @@ Function tags are the name of the event, but the path is prefixed with
 Examples can be found in the examples folder.
 ## Entity Events
 
-Entity events only work for vanilla entities by default. For others, you
-will need to create the correct function files to filter them out as
-well. For modded entities, also try including a
-[libcd](https://www.curseforge.com/minecraft/mc-mods/libcd) mcmeta file,
-so it won't fail to load.
-
-It is tedious, but it does allow you to script entity events in any way
-you'd like. (eg, in my system horses are 1 event, but you can use entity
-selectors to filter for colors)
+Entity events only work for vanilla entities by default. The name is the
+name that you would use for a type selector (`@s[type=name]`).
 
 ### Internal Events 
 DO NOT hook into tags that use the name "internal", unless you are fully
 aware of what are you doing. Those only exist for the purposes of this
 mod.
+
 
 ## Commands
 
@@ -78,6 +68,9 @@ datapack (re)load.
 
 Calling the `event` command without an id (eg: `event disable`), will
 cause it to affect all currently registered events.
+
+`event disable` will disable all events, they can be selectively
+re-enabled with `event enable <event id>`
 
 
 ## Registration callbacks.
