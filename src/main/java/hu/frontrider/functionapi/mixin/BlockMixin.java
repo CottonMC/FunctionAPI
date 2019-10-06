@@ -37,7 +37,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class BlockMixin {
 
     private Identifier thisId = null;
-    private EventManager neighbourUpdate;
     private EventManager place;
     private EventManager brake;
     private EventManager exploded;
@@ -46,18 +45,11 @@ public abstract class BlockMixin {
     private EventManager entityCollided;
     private EventManager entityLanded;
     private EventManager projectileHit;
+    private EventManager neighbourUpdate;
 
     @Inject(at = @At("TAIL"), method = "neighborUpdate")
     private void neighborUpdate(BlockState blockState_1, World world_1, BlockPos blockPos_1, Block block_1, BlockPos blockPos_2, boolean boolean_1, CallbackInfo ci) {
-
-        if (world_1 instanceof ServerWorld) {
-            if (neighbourUpdate == null) {
-                neighbourUpdate = new EventManager((ScriptedObject) this, "neighbour_update");
-                neighbourUpdate.serverInit(world_1.getServer());
-            }
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1);
-            neighbourUpdate.fire(commandContext);
-        }
+        neighbourUpdate = EventManager.execute(neighbourUpdate, (ScriptedObject) this, "neighbour_update", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1));
     }
 
     @Inject(
@@ -65,15 +57,7 @@ public abstract class BlockMixin {
             method = "onPlaced"
     )
     private void place(World world_1, BlockPos blockPos_1, BlockState blockState_1, LivingEntity livingEntity_1, ItemStack itemStack_1, CallbackInfo ci) {
-        if (world_1 instanceof ServerWorld) {
-            if (place == null) {
-                place = new EventManager((ScriptedObject) this, "placed");
-                place.serverInit(world_1.getServer());
-
-            }
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, livingEntity_1);
-            place.fire(commandContext);
-        }
+        place = EventManager.execute(place, (ScriptedObject) this, "placed", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, livingEntity_1));
     }
 
     @Inject(
@@ -81,16 +65,7 @@ public abstract class BlockMixin {
             method = "onBroken"
     )
     private void broken(IWorld world_1, BlockPos blockPos_1, BlockState blockState_1, CallbackInfo ci) {
-
-        if (world_1 instanceof ServerWorld) {
-            if (brake == null) {
-                brake = new EventManager((ScriptedObject) this, "broken");
-                entityLanded.serverInit(((ServerWorld) world_1).getServer());
-
-            }
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1);
-            brake.fire(commandContext);
-        }
+        brake = EventManager.execute(brake, (ScriptedObject) this, "broken", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1));
     }
 
     @Inject(
@@ -98,16 +73,7 @@ public abstract class BlockMixin {
             method = "onDestroyedByExplosion"
     )
     private void exploded(World world_1, BlockPos blockPos_1, Explosion explosion_1, CallbackInfo ci) {
-
-        if (world_1 instanceof ServerWorld) {
-            if (exploded == null) {
-                exploded = new EventManager((ScriptedObject) this, "exploded");
-                entityLanded.serverInit(world_1.getServer());
-
-            }
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1);
-            exploded.fire(commandContext);
-        }
+        exploded = EventManager.execute(exploded, (ScriptedObject) this, "exploded", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1));
     }
 
     @Inject(
@@ -115,43 +81,17 @@ public abstract class BlockMixin {
             method = "activate"
     )
     private void activate(BlockState blockState_1, World world_1, BlockPos blockPos_1, PlayerEntity playerEntity_1, Hand hand_1, BlockHitResult blockHitResult_1, CallbackInfoReturnable<Boolean> cir) {
-
-        if (world_1 instanceof ServerWorld) {
-            if (activate == null) {
-                activate = new EventManager((ScriptedObject) this, "activate");
-                activate.serverInit(world_1.getServer());
-            }
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1,playerEntity_1);
-            activate.fire(commandContext);
-        }
+        activate = EventManager.execute(activate, (ScriptedObject) this, "activate", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, playerEntity_1));
     }
 
     @Inject(at = @At("TAIL"), method = "onSteppedOn")
     private void onSteppedOn(World world_1, BlockPos blockPos_1, Entity entity_1, CallbackInfo ci) {
-
-        if (world_1 instanceof ServerWorld) {
-            if (steppedOn == null) {
-                steppedOn = new EventManager((ScriptedObject) this, "stepped_on");
-                steppedOn.serverInit(world_1.getServer());
-
-            }
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1);
-            steppedOn.fire(commandContext);
-        }
+        steppedOn = EventManager.execute(steppedOn, (ScriptedObject) this, "stepped_on", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
     }
 
     @Inject(at = @At("TAIL"), method = "onEntityCollision")
     private void onEntityCollision(BlockState blockState_1, World world_1, BlockPos blockPos_1, Entity entity_1, CallbackInfo ci) {
-
-        if (world_1 instanceof ServerWorld) {
-            if (entityCollided == null) {
-                entityCollided = new EventManager((ScriptedObject) this, "entity_collided");
-                entityCollided.serverInit(world_1.getServer());
-
-            }
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1);
-            entityCollided.fire(commandContext);
-        }
+        entityCollided = EventManager.execute(entityCollided, (ScriptedObject) this, "entity_collided", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
     }
 
 
@@ -160,15 +100,7 @@ public abstract class BlockMixin {
             method = "onLandedUpon"
     )
     private void onLandedUpon(World world_1, BlockPos blockPos_1, Entity entity_1, float float_1, CallbackInfo ci) {
-
-        if (world_1 instanceof ServerWorld) {
-            if (entityLanded == null) {
-                entityLanded = new EventManager((ScriptedObject) this, "entity_landed");
-                entityLanded.serverInit(world_1.getServer());
-            }
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1);
-            entityLanded.fire(commandContext);
-        }
+        entityLanded = EventManager.execute(entityLanded, (ScriptedObject) this, "entity_landed", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
     }
 
     @Inject(
@@ -176,16 +108,7 @@ public abstract class BlockMixin {
             method = "onProjectileHit"
     )
     private void onProjectileHit(World world_1, BlockState blockState_1, BlockHitResult blockHitResult_1, Entity entity_1, CallbackInfo ci) {
-
-        if (world_1 instanceof ServerWorld) {
-            if (projectileHit == null) {
-                projectileHit = new EventManager((ScriptedObject) this, "projectile_hit");
-                projectileHit.serverInit(world_1.getServer());
-
-            }
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockHitResult_1.getBlockPos(), entity_1);
-            projectileHit.fire(commandContext);
-        }
+        projectileHit = EventManager.execute(projectileHit, (ScriptedObject) this, "projectile_hit", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockHitResult_1.getBlockPos(), entity_1));
     }
 
     /**

@@ -6,11 +6,14 @@ import hu.frontrider.functionapi.events.runners.EventRunnerFactory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerTask;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.IWorld;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
 /**
  * Handles an event
@@ -145,5 +148,17 @@ public class EventManager {
     public boolean hasEvents(MinecraftServer server) {
         eventRunners.forEach(eventRunner -> eventRunner.reload(server));
         return hasEvents();
+    }
+
+    public static EventManager execute(EventManager manager, ScriptedObject thiz, String name, IWorld world_1, Supplier<ServerCommandSource> serverCommandSourceSupplier){
+        if (world_1 instanceof ServerWorld) {
+            if (manager == null) {
+                manager = new EventManager(thiz, name);
+                manager.serverInit(((ServerWorld) world_1).getServer());
+            }
+            manager.fire(serverCommandSourceSupplier.get());
+            return manager;
+        }
+        return null;
     }
 }

@@ -266,7 +266,8 @@ def livingEntity = [
         "llama",
         "parrot",
         "villager",
-        "player"
+        "player",
+        "pillager"
 ]
 
 
