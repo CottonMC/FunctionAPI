@@ -40,32 +40,44 @@ public class EventManager {
     private final Identifier identifier;
     /**
      * If the handler is a singleton,
-     * */
+     */
     private final boolean isSingleton;
 
     private boolean enabled = true;
 
+    private boolean initialized = false;
+
     private List<EventRunner> eventRunners;
 
-    public EventManager(ScriptedObject target, String eventName,boolean isSingleton) {
-        this(target, new Identifier(target.getID().getNamespace(), target.getType() + "/" + target.getID().getPath() + "/" + eventName),isSingleton);
+    public EventManager(ScriptedObject target, String eventName, boolean isSingleton) {
+        this(target, createID(target, eventName), isSingleton);
     }
+
     public EventManager(ScriptedObject target, String eventName) {
-        this(target, new Identifier(target.getID().getNamespace(), target.getType() + "/" + target.getID().getPath() + "/" + eventName),false);
+        this(target, createID(target, eventName), false);
     }
+
     public EventManager(ScriptedObject target, Identifier identifier) {
-        this(target,identifier,false);
+        this(target, identifier, false);
     }
-    public EventManager(ScriptedObject target, Identifier identifier,boolean isSingleton) {
+
+    public EventManager(ScriptedObject target, Identifier identifier, boolean isSingleton) {
         this.target = target;
         this.identifier = identifier;
         this.isSingleton = isSingleton;
-        GlobalEventContainer.getInstance().addManager(this);
+        GlobalEventContainer.getInstance().addIfMissing(this);
 
     }
 
+    public static Identifier createID(ScriptedObject target, String eventName) {
+        return new Identifier(target.getID().getNamespace(), target.getType() + "/" + target.getID().getPath() + "/" + eventName);
+    }
+
     public void serverInit(MinecraftServer server) {
-        GlobalEventContainer.getInstance().initCallback(identifier, server);
+        if (!initialized) {
+            GlobalEventContainer.getInstance().initCallback(identifier, server);
+            initialized = true;
+        }
     }
 
 
@@ -76,11 +88,11 @@ public class EventManager {
         if (enabled) {
             GlobalEventContainer.getInstance().addIfMissing(this);
 
-            if(isSingleton) {
+            if (isSingleton) {
                 commandContext.getMinecraftServer().send(new ServerTask(1, () -> {
                     getRunners().get(0).fire(commandContext);
                 }));
-            }else {
+            } else {
                 for (EventRunner eventRunner : getRunners()) {
                     commandContext.getMinecraftServer().send(new ServerTask(1, () -> {
                         eventRunner.fire(commandContext);
@@ -137,8 +149,8 @@ public class EventManager {
         return false;
     }
 
-    public boolean isSingleton(){
-            return isSingleton;
+    public boolean isSingleton() {
+        return isSingleton;
     }
 
     public Identifier getID() {
@@ -150,7 +162,7 @@ public class EventManager {
         return hasEvents();
     }
 
-    public static EventManager execute(EventManager manager, ScriptedObject thiz, String name, IWorld world_1, Supplier<ServerCommandSource> serverCommandSourceSupplier){
+    public static EventManager execute(EventManager manager, ScriptedObject thiz, String name, IWorld world_1, Supplier<ServerCommandSource> serverCommandSourceSupplier) {
         if (world_1 instanceof ServerWorld) {
             if (manager == null) {
                 manager = new EventManager(thiz, name);
