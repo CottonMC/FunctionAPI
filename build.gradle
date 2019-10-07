@@ -267,7 +267,10 @@ def livingEntity = [
         "parrot",
         "villager",
         "player",
-        "pillager"
+        "pillager",
+        "drowned",
+        "phantom",
+        "ravager"
 ]
 
 

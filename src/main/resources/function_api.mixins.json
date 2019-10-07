@@ -1,9 +1,9 @@
 {
   "required": true,
-  "package": "hu.frontrider.functionapi.mixin",
+  "package": "io.github.cottonmc.functinapi.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "BlockMixin","ServerMixin","ItemMixin","EntityMixin","LivingEntityMixin","WorldMixin"
+    "BlockMixin","ServerMixin","ItemMixin","EntityMixin","LivingEntityMixin","WorldMixin","BlockActivateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
