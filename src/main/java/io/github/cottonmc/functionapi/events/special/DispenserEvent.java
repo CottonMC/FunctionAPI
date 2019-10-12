@@ -46,6 +46,7 @@ public class DispenserEvent implements DispenserBehavior {
         EventManager dispense = new EventManager((ScriptedObject) itemStack.getItem(), "dispense", true);
 
         EventManager eventManager = GlobalEventContainer.getInstance().addIfMissing(dispense);
+        //if the manager has anything to run, we do so. IF not, than we do not touch the stack.
         if (eventManager.hasEvents()) {
             //if the item is damageable, then damage it.
             if (itemStack.getItem().isDamageable()) {

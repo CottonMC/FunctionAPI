@@ -24,10 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Implements(@Interface(iface = ScriptedObject.class, prefix = "api_scripted$"))
 public abstract class LivingEntityMixin extends Entity {
 
-    @Shadow
-    protected boolean dead;
-
-
     private static EventManager attackingEvent;
     private static EventManager deathEvent;
     private static EventManager damage;

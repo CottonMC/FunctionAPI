@@ -3,6 +3,7 @@ package io.github.cottonmc.functionapi.mixin;
 import io.github.cottonmc.functionapi.ScriptedObject;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
 import io.github.cottonmc.functionapi.events.EventManager;
+import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -29,7 +30,6 @@ public abstract class ItemMixin {
 
     private Identifier thisId = null;
     private EventManager useOnBlock;
-    private EventManager finishUsing;
     private EventManager useOnEntiy;
 
     @Inject(
@@ -39,16 +39,10 @@ public abstract class ItemMixin {
     )
     private void useOnBlock(ItemUsageContext itemUsageContext, CallbackInfoReturnable<ActionResult> cir){
 
-        if(useOnBlock == null){
-            useOnBlock = new EventManager((ScriptedObject) this, "use_on_block");
-        }
-
         World world = itemUsageContext.getWorld();
         BlockPos blockPos = itemUsageContext.getBlockPos();
-        if (world instanceof ServerWorld) {
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos,itemUsageContext.getPlayer());
-            useOnBlock.fire(commandContext);
-        }
+
+        useOnBlock = EventManager.execute(useOnBlock, (ScriptedObject) this, "use_on_block", world, () -> ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos,itemUsageContext.getPlayer()));
 
         if(useOnBlock.hasEvents()){
             cir.setReturnValue(ActionResult.SUCCESS);
@@ -64,14 +58,8 @@ public abstract class ItemMixin {
     private void useOnEntity(ItemStack itemStack_1, PlayerEntity playerEntity, LivingEntity livingEntity_1, Hand hand_1, CallbackInfoReturnable<Boolean> cir){
 
         World world = livingEntity_1.world;
-        if(useOnEntiy == null){
-            useOnEntiy = new EventManager((ScriptedObject) this, "use_on_entity");
-        }
 
-        if (world instanceof ServerWorld) {
-            ServerCommandSource commandContext = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, livingEntity_1);
-            useOnEntiy.fire(commandContext);
-        }
+        useOnEntiy = EventManager.execute(useOnEntiy, (ScriptedObject) this, "stepped_on", world, () -> ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, livingEntity_1));
 
         if(useOnEntiy.hasEvents()){
             cir.setReturnValue(true);

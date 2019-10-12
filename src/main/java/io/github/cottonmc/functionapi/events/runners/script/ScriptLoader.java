@@ -1,5 +1,6 @@
 package io.github.cottonmc.functionapi.events.runners.script;
 
+import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.cottonmc.functionapi.FunctionAPI;
 import io.github.cottonmc.functionapi.events.runners.script.api.ExecutableScript;
@@ -42,7 +43,12 @@ public class ScriptLoader implements SimpleResourceReloadListener {
 
     @Override
     public CompletableFuture load(ResourceManager manager, Profiler profiler, Executor executor) {
-        SCRIPT_TAGS.getEntries().clear();
+
+        Map<Identifier, Tag<ExecutableScript>> entries = SCRIPT_TAGS.getEntries();
+        if (entries != null) {
+            if (!(entries instanceof ImmutableMap))
+                entries.clear();
+        }
         return CompletableFuture.supplyAsync(() -> {
             SCRIPTS.clear();
             Collection<Identifier> resources = manager.findResources("scripts", (name) -> true);
@@ -53,7 +59,7 @@ public class ScriptLoader implements SimpleResourceReloadListener {
                     int localPath = fileId.getPath().indexOf('/') + 1;
                     Identifier scriptId = new Identifier(fileId.getNamespace(), fileId.getPath().substring(localPath));
                     for (ScriptParser parser : parsers) {
-                        if(parser.canParse(scriptId)){
+                        if (parser.canParse(scriptId)) {
                             Optional<ExecutableScript> optionalExecutableScript = parser.parse(script);
                             optionalExecutableScript.ifPresent(executableScript -> SCRIPTS.put(scriptId, executableScript));
                             break;

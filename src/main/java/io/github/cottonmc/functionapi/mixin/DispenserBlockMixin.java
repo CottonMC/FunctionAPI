@@ -18,10 +18,10 @@ public abstract class DispenserBlockMixin {
     private DispenserEvent event = new DispenserEvent();
 
     /**
-     * if there
+     * if there is no event, then we do the command.
      */
     @Inject(at = @At("RETURN"), cancellable = true, method = "getBehaviorForItem")
-    private void getBehaviourForItemMod(ItemStack itemStack_1, CallbackInfoReturnable<DispenserBehavior> cir) {
+    private void dispense(ItemStack itemStack_1, CallbackInfoReturnable<DispenserBehavior> cir) {
         if(cir.getReturnValue() == DispenserBehavior.NOOP){
             cir.setReturnValue(event);
         }

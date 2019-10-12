@@ -31,8 +31,20 @@ public abstract class WorldMixin {
             Block blockState = getBlockState(blockPos_1).getBlock();
             ServerWorld world = (ServerWorld)(Object) this;
 
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) blockState, "break",ServerCommandSourceFactory.INSTANCE.create(world.getServer(), world, blockState, blockPos_1));
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) blockState, "broken",ServerCommandSourceFactory.INSTANCE.create(world.getServer(), world, blockState, blockPos_1));
         }
+    }
 
+    @Inject(
+            at = @At("RETURN"),
+            method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z"
+    )
+    private void setBlockState(BlockPos blockPos_1, BlockState blockState, int int_1, CallbackInfoReturnable<Boolean> cir){
+        if(!this.isClient) {
+            if (int_1 == 2 && cir.getReturnValue()) {
+                ServerWorld world = (ServerWorld) (Object) this;
+                GlobalEventContainer.getInstance().executeEvent((ScriptedObject) blockState.getBlock(), "set", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), world, blockState.getBlock(), blockPos_1));
+            }
+        }
     }
 }
