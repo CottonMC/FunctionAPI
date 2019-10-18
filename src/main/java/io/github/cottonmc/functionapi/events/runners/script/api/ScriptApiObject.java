@@ -5,6 +5,8 @@ package io.github.cottonmc.functionapi.events.runners.script.api;
  * */
 public class ScriptApiObject {
 
+
+    //we have an export import system, so we can import libraries from other languages.
     /**
      * An object, that your script exports. Same as nodejs's export function.
      * */

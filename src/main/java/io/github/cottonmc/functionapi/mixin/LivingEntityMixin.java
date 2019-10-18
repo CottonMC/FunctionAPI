@@ -27,6 +27,7 @@ public abstract class LivingEntityMixin extends Entity {
     private static EventManager attackingEvent;
     private static EventManager deathEvent;
     private static EventManager damage;
+    private static EventManager shieldHit;
 
 
     private Identifier eventTypeID = new Identifier(FunctionAPI.MODID, "entity");
@@ -55,6 +56,11 @@ public abstract class LivingEntityMixin extends Entity {
     private void damaged(DamageSource damageSource_1, float float_1, CallbackInfoReturnable<Boolean> cir) {
         damage = EventManager.execute(damage, (ScriptedObject) this,"damage",world,()->ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
 
+    }
+
+    @Inject(at = @At("HEAD"), method = "damageShield")
+    private void damageShield(float float_1, CallbackInfo ci){
+        shieldHit = EventManager.execute(shieldHit, (ScriptedObject) this,"shield_hit",world,()->ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
     }
 
     public Identifier api_scripted$getID() {

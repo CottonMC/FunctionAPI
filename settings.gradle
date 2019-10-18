@@ -8,13 +8,5 @@ pluginManagement {
         mavenLocal()
         gradlePluginPortal()
     }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.namespace == "org.gradle.sample") {
-                useModule("io.github.cottonmc:"+requested.id.version)
-            }
-        }
-    }
 }
-include 'api'
 
