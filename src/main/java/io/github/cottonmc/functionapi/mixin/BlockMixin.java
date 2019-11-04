@@ -1,13 +1,16 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.ScriptedObject;
+import io.github.cottonmc.functionapi.api.CommandSourceExtension;
+import io.github.cottonmc.functionapi.api.ScriptedObject;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
 import io.github.cottonmc.functionapi.events.EventManager;
+import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -25,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * adds scripting functionality to the block class.
  */
-@Mixin(Block.class)
+@Mixin(value = Block.class,priority = 0)
 @Implements(@Interface(iface = ScriptedObject.class, prefix = "api_scripted$"))
 public abstract class BlockMixin {
 
@@ -42,6 +45,38 @@ public abstract class BlockMixin {
     )
     private void place(World world_1, BlockPos blockPos_1, BlockState blockState_1, LivingEntity livingEntity_1, ItemStack itemStack_1, CallbackInfo ci) {
         place = EventManager.execute(place, (ScriptedObject) this, "placed", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, livingEntity_1));
+    }
+
+
+    @Inject(
+            at = @At("HEAD"),
+            method = "onPlaced",
+            cancellable = true
+    )
+    private void placeBefore(World world_1, BlockPos blockPos_1, BlockState blockState_1, LivingEntity livingEntity_1, ItemStack itemStack_1, CallbackInfo ci) {
+        if(world_1 instanceof ServerWorld) {
+            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, livingEntity_1);
+            GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "before/placed", serverCommandSource);
+            if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
+                ci.cancel();
+            }
+        }
+    }
+
+    @Inject(
+            at = @At("HEAD"),
+            method = "onBroken",
+            cancellable = true
+    )
+    private void brokenBefore(IWorld world_1, BlockPos blockPos_1, BlockState blockState_1, CallbackInfo ci) {
+        if(world_1 instanceof ServerWorld) {
+            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create((ServerWorld) world_1, (Block) (Object) this, blockPos_1);
+            GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "before/broken", serverCommandSource);
+
+            if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
+                ci.cancel();
+            }
+        }
     }
 
     @Inject(
@@ -66,6 +101,22 @@ public abstract class BlockMixin {
         steppedOn = EventManager.execute(steppedOn, (ScriptedObject) this, "stepped_on", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
     }
 
+
+
+    @Inject(
+            at = @At("HEAD"),
+            method = "onLandedUpon",cancellable = true
+    )
+    private void onLandedUponBefore(World world_1, BlockPos blockPos_1, Entity entity_1, float float_1, CallbackInfo ci) {
+        if(world_1 instanceof ServerWorld) {
+            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1);
+            GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "before/entity_landed", serverCommandSource);
+
+            if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
+                ci.cancel();
+            }
+        }
+    }
 
     @Inject(
             at = @At("TAIL"),

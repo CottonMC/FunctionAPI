@@ -2,7 +2,6 @@ plugins {
     id 'fabric-loom' version '0.2.4-SNAPSHOT'
     id 'maven-publish'
     id "com.jfrog.artifactory" version "4.9.0"
-
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -56,6 +55,10 @@ dependencies {
     modRuntime(group: 'io.github.cottonmc', name: 'Jankson', version: '1.0.0+j1.1.2', classifier: 'dev') {
         transitive = false
     }
+
+
+    modCompile(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0', classifier: 'dev')
+    include(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0')
 
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.

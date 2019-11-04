@@ -5,9 +5,18 @@
   "hu.frontrider.functionapi.command.all_events_enabled": "Minden esemény bekapcsolva!",
   "hu.frontrider.functionapi.command.all_events_disabled": "Minden esemény kikapcsolva!",
 
-
   "hu.frontrider.functionapi.command.event_enabled": "Esemény bekapcsolva!",
   "hu.frontrider.functionapi.command.event_disabled": "Esemény kikapcsolva!",
+
+
+  "hu.frontrider.functionapi.command.source.no": "Nincs forrás tároló!",
+  "hu.frontrider.functionapi.command.target.no": "Nincs cél tároló!",
+
+  "hu.frontrider.functionapi.command.source.cant": "Nem tudsz kivenni ebből a tárolóból!",
+  "hu.frontrider.functionapi.command.target.cant": "Nem tudsz beletenni ebbe a tárolóba!",
+
+  "hu.frontrider.functionapi.command.source.multiple": "Több tárolóból szeretnél kivenni! Válassz ki egyet!",
+  "hu.frontrider.functionapi.command.target.multiple": "Több tárolóba szeretnél beletenni! Válassz ki egyet!",
 
   "hu.frontrider.functionapi.command.cleared": "Minden esemény eltávolítva! Az egyedi eseményeket újra létre kell hozni!",
   "hu.frontrider.functionapi.script_error_in": "Script hiba: %1! Ellenőrizd a szerverlogot!",

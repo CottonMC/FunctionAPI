@@ -1,0 +1,6 @@
+#create a block with id
+register block test:block2
+#disable it's item form
+blocksettings disableitem
+#disable collosion
+blocksettings ethereal

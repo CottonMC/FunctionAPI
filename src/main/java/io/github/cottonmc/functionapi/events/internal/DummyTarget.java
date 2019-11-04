@@ -1,6 +1,6 @@
 package io.github.cottonmc.functionapi.events.internal;
 
-import io.github.cottonmc.functionapi.ScriptedObject;
+import io.github.cottonmc.functionapi.api.ScriptedObject;
 import net.minecraft.util.Identifier;
 
 /**

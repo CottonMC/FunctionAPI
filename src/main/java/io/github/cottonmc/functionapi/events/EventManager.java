@@ -1,6 +1,6 @@
 package io.github.cottonmc.functionapi.events;
 
-import io.github.cottonmc.functionapi.ScriptedObject;
+import io.github.cottonmc.functionapi.api.ScriptedObject;
 import io.github.cottonmc.functionapi.events.runners.EventRunner;
 import io.github.cottonmc.functionapi.events.runners.EventRunnerFactory;
 import net.minecraft.server.MinecraftServer;
@@ -9,6 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -73,6 +74,7 @@ public class EventManager {
         return new Identifier(target.getID().getNamespace(), target.getType() + "/" + target.getID().getPath() + "/" + eventName);
     }
 
+
     public void serverInit(MinecraftServer server) {
         if (!initialized) {
             GlobalEventContainer.getInstance().initCallback(identifier, server);
@@ -97,6 +99,25 @@ public class EventManager {
                     commandContext.getMinecraftServer().send(new ServerTask(1, () -> {
                         eventRunner.fire(commandContext);
                     }));
+                }
+            }
+        }
+    }
+
+    /**
+     * call it with the correct context when the event should run.
+     */
+    public void fireBlocking(ServerCommandSource commandContext) {
+        if (enabled) {
+            GlobalEventContainer.getInstance().addIfMissing(this);
+
+            if (isSingleton) {
+                commandContext.getMinecraftServer().send(new ServerTask(1, () -> {
+                    getRunners().get(0).fire(commandContext);
+                }));
+            } else {
+                for (EventRunner eventRunner : getRunners()) {
+                    eventRunner.fire(commandContext);
                 }
             }
         }
@@ -173,4 +194,16 @@ public class EventManager {
         }
         return null;
     }
+    public static EventManager executeBlocking(EventManager manager, ScriptedObject thiz, String name, IWorld world_1, Supplier<ServerCommandSource> serverCommandSourceSupplier) {
+        if (world_1 instanceof ServerWorld) {
+            if (manager == null) {
+                manager = new EventManager(thiz, name);
+                manager.serverInit(((ServerWorld) world_1).getServer());
+            }
+            manager.fireBlocking(serverCommandSourceSupplier.get());
+            return manager;
+        }
+        return null;
+    }
+
 }

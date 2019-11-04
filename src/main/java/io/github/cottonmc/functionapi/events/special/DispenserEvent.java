@@ -1,6 +1,6 @@
 package io.github.cottonmc.functionapi.events.special;
 
-import io.github.cottonmc.functionapi.ScriptedObject;
+import io.github.cottonmc.functionapi.api.ScriptedObject;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
 import io.github.cottonmc.functionapi.events.EventManager;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;

@@ -1,0 +1,5 @@
+blocksettings material glass
+blocksettings sound glass
+blocksettings tool pickaxe
+blocksettings mininglevel 0
+blocksetting rendermode translucent

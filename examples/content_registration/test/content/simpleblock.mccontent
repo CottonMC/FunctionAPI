@@ -1,0 +1,5 @@
+register block test:block
+print "registering from file"
+
+include function_api:api/make_sand
+blocksettings type stairs

@@ -1,6 +1,6 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.ScriptedObject;
+import io.github.cottonmc.functionapi.api.ScriptedObject;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import net.minecraft.block.Block;
@@ -45,6 +45,11 @@ public abstract class WorldMixin {
                 ServerWorld world = (ServerWorld) (Object) this;
                 GlobalEventContainer.getInstance().executeEvent((ScriptedObject) blockState.getBlock(), "set", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), world, blockState.getBlock(), blockPos_1));
             }
+            if (int_1 == 67 && cir.getReturnValue()) {
+                ServerWorld world = (ServerWorld) (Object) this;
+                GlobalEventContainer.getInstance().executeEvent((ScriptedObject) blockState.getBlock(), "piston_move", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), world, blockState.getBlock(), blockPos_1));
+            }
+
         }
     }
 }

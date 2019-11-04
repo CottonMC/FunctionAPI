@@ -3,6 +3,7 @@ package io.github.cottonmc.functionapi.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import io.github.cottonmc.functionapi.api.CommandSourceExtension;
 import io.github.cottonmc.functionapi.events.EventManager;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import io.github.cottonmc.functionapi.events.internal.DummyTarget;
@@ -15,9 +16,10 @@ import net.minecraft.util.Identifier;
 
 public class EventCommand {
 
-    private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext_1, suggestionsBuilder_1) -> {
+    public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext_1, suggestionsBuilder_1) -> {
         for (Identifier identifier : GlobalEventContainer.getInstance().getEventNames()) {
-            suggestionsBuilder_1 = suggestionsBuilder_1.suggest(identifier.toString());
+            String s = identifier.toString();
+            suggestionsBuilder_1 = suggestionsBuilder_1.suggest(s);
         }
         return suggestionsBuilder_1.buildFuture();
     };
@@ -27,6 +29,11 @@ public class EventCommand {
         commandDispatcher_1.register(
                 CommandManager.literal("event")
                         .requires((serverCommandSource_1) -> serverCommandSource_1.hasPermissionLevel(2))
+                        .then(CommandManager.literal("cancel")
+                        .executes(context -> {
+                            ((CommandSourceExtension)context.getSource()).cancel();
+                            return 1;
+                        }))
                         .then(CommandManager.literal("clear")
                                 .executes(commandContext -> {
                                     GlobalEventContainer.getInstance().clean();

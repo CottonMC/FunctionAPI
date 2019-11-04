@@ -21,7 +21,7 @@
     "main":[ "io.github.cottonmc.functionapi.FunctionAPI"]
   },
   "mixins": [
-    "function_api.mixins.json"
+    "mixins.function_api.json"
   ],
 
   "depends": {

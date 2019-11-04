@@ -1,6 +1,6 @@
 package io.github.cottonmc.functionapi.events;
 
-import io.github.cottonmc.functionapi.ScriptedObject;
+import io.github.cottonmc.functionapi.api.ScriptedObject;
 import io.github.cottonmc.functionapi.events.internal.ServerTarget;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -111,7 +111,14 @@ public class GlobalEventContainer {
         return eventManagerMap.get(eventManager.getID());
     }
 
-    public void executeEvent(ScriptedObject target, String name, ServerCommandSource serverCommandSource) {
-        createEvent(target, name).fire(serverCommandSource);
+    public boolean executeEvent(ScriptedObject target, String name, ServerCommandSource serverCommandSource) {
+        EventManager event = createEvent(target, name);
+        event.fire(serverCommandSource);
+
+        return event.hasEvents();
+    }
+
+    public void executeEventBlocking(ScriptedObject target, String name, ServerCommandSource serverCommandSource) {
+        createEvent(target, name).fireBlocking(serverCommandSource);
     }
 }

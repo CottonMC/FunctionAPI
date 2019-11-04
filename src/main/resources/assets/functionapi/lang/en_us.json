@@ -7,6 +7,15 @@
   "hu.frontrider.functionapi.command.event_enabled": "Event enabled!",
   "hu.frontrider.functionapi.command.event_disabled": "Event disabled!",
 
+  "hu.frontrider.functionapi.command.source.no": "No inventory to pull from!",
+  "hu.frontrider.functionapi.command.target.no": "No inventory to push into!",
+
+  "hu.frontrider.functionapi.command.source.cant": "Can't pull from source!",
+  "hu.frontrider.functionapi.command.target.cant": "Can't push into target!",
+
+  "hu.frontrider.functionapi.command.source.multiple": "Multiple inventories to pull from! Select only one!",
+  "hu.frontrider.functionapi.command.target.multiple": "Multiple inventories to push into! Select only one!",
+
   "hu.frontrider.functionapi.command.cleared": "Removed all EventHandlers! Custom handlers need to be re-registered!",
   "hu.frontrider.functionapi.script_error_in": "Script execution error in %1! Errors have been printed to the server console.",
   "hu.frontrider.functionapi.script_error": "Script execution error! Errors have been printed to the server console."
