@@ -374,13 +374,14 @@ tag name: `minecraft:function_api/block/dirt/broken`
 
 If an event is blocking, then it will pause the game until the execution is done, so it CAN cause lagspikes! (non blocking events will run when the server has time for it)
 
-| name  | includes | blocking |
-|---|---|---|
+| name  | description | includes | blocking |
+|---|---|---|---|
 """)
-        
+
         tree.each { file ->
+            String contents = file.readLines().join("\n")
             Pattern pattern = Pattern.compile("GlobalEventContainer\\.getInstance\\(\\)\\.execute(Event|EventBlocking)\\((.*?), \"(.*?)\",([^;\n]+|[^{])")
-            def found = file.readLines().join("\n").findAll(pattern)
+            def found = contents.findAll(pattern)
             if (!found.isEmpty()) {
                 println(file.name)
                 found.each {
@@ -401,45 +402,65 @@ If an event is blocking, then it will pause the game until the execution is done
                                 params[0] = "block"
                             break;
                     }
-                    params[1] = params[1].replaceAll("\"","").trim()
+                    params[1] = params[1].replaceAll("\"", "").trim()
 
                     def components = params[2]
                             .replaceAll("ServerCommandSourceFactory.INSTANCE.create\\(", "")
                             .replaceAll("\\)\\)\\) \\{", "")
                             .replaceAll("\\)\\)", "")
                             .split(",")
-                            //.reverse()
+                    //.reverse()
                             .toList()
-                    
+
                     components.removeAt(0)
                     components.removeAt(0)
 
-                    if(components.size() ==1){
-                        components ="The source entity, running it it's position"
+                    if (components.size() == 1) {
+                        components = "The source entity, running it it's position"
                     }
-                    if(components.size() ==2){
-                        components ="The source block, running it it's position"
+                    if (components.size() == 2) {
+                        components = "The source block, running it it's position"
                     }
-                    if(components.size() ==3){
-                        components ="The source block, running it it's position, also the entity that is the source of this interaction"
+                    if (components.size() == 3) {
+                        components = "The source block, running it it's position, also the entity that is the source of this interaction"
                     }
 
                     def isBlocking = "No"
-                    
-                    if(params[1].contains("before/")){
+
+                    if (params[1].contains("before/")) {
                         isBlocking = "Yes, can be cancelled!"
                     }
-                    if(params[1].contains("after/") ){
+                    if (params[1].contains("after/")) {
                         isBlocking = "Yes"
                     }
-                    
-                    println(components)
-                    doc.append("| \\<namespace\\>:${params[0]}/\\<name\\>/${params[1]}|${components}|$isBlocking|\n")
 
+                    println(components)
+                    doc.append("| \\<namespace\\>:${params[0]}/\\<name\\>/${params[1]}||${components}|$isBlocking|\n")
+
+                    if (params[0] == "entity") {
+                        doc.append("| function_api:${params[0]}/\\<name\\>/${params[1]}|Called when any entity calls \\<namespace\\>:${params[0]}/\\<name\\>/${params[1]}|${components}|$isBlocking|\n")
+
+                    }
                     println(params)
 
                 }
             }
+
+            Pattern functionPattern = Pattern.compile("#(.*?)\nevent run (.*?)\n")
+            def foundInFunction = contents.findAll(functionPattern)
+            if(!foundInFunction.isEmpty()){
+                println(file.name)
+                foundInFunction.each{
+                    println(it)
+                    def lines = it.split("\n")
+                    
+                    lines[0] = lines[0].replaceAll("#","")
+                    lines[1] = lines[1].replaceAll("event run ","")
+                        
+                    doc.append("| ${lines[1]}|${lines[0]}| The server | No |\n")
+                }
+            }
         }
+
     }
 }
