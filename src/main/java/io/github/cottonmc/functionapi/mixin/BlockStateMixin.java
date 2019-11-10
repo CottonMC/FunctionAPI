@@ -59,13 +59,13 @@ public abstract class BlockStateMixin {
     private void activateBefore(World world_1, PlayerEntity playerEntity_1, Hand hand_1, BlockHitResult blockHitResult_1, CallbackInfoReturnable<Boolean> cir) {
         if (!world_1.isClient()) {
 
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockHitResult_1.getBlockPos(), playerEntity_1);
+            ServerCommandSource serverCommandSource = null;
             if (hand_1 == Hand.MAIN_HAND) {
                 if (playerEntity_1.getMainHandStack().isEmpty())
-                    GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this.getBlock(), "before/activate", serverCommandSource);
+                    serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this.getBlock(), "before/activate", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockHitResult_1.getBlockPos(), playerEntity_1));
             } else {
                 if (playerEntity_1.getOffHandStack().isEmpty())
-                    GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this.getBlock(), "before/activate_offhand", serverCommandSource);
+                    serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this.getBlock(), "before/activate_offhand", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockHitResult_1.getBlockPos(), playerEntity_1));
             }
             if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
                 cir.setReturnValue(false);
@@ -81,7 +81,6 @@ public abstract class BlockStateMixin {
     }
 
     @Inject(at = @At("TAIL"), method = "onEntityCollision")
-
     private void onEntityCollision(World world_1, BlockPos blockPos_1, Entity entity_1, CallbackInfo ci) {
         if (!world_1.isClient())
             GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "entity_collided", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockPos_1, entity_1));

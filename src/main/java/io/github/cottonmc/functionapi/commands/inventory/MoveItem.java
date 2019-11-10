@@ -3,7 +3,7 @@ package io.github.cottonmc.functionapi.commands.inventory;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.cottonmc.functionapi.commands.InventoryCommand;
+import io.github.cottonmc.functionapi.api.BiDirectionalCommand;
 import io.github.cottonmc.functionapi.commands.inventory.util.FloatingItemInventory;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.command.arguments.BlockPosArgumentType;
@@ -24,11 +24,11 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class MoveItem implements InventoryCommand.BiDirectionalCommand {
+public class MoveItem implements BiDirectionalCommand {
 
-    public static final InventoryCommand.BiDirectionalCommand UNFILTERED = new MoveItem((context -> itemStack -> itemStack.getCount() > 0 && itemStack.getItem() != Items.AIR));
+    public static final BiDirectionalCommand UNFILTERED = new MoveItem((context -> itemStack -> itemStack.getCount() > 0 && itemStack.getItem() != Items.AIR));
 
-    public static final InventoryCommand.BiDirectionalCommand FILTERED = new MoveItem((context -> {
+    public static final BiDirectionalCommand FILTERED = new MoveItem((context -> {
         try {
             return ItemPredicateArgumentType.getItemPredicate(context, "item");
         } catch (CommandSyntaxException e) {

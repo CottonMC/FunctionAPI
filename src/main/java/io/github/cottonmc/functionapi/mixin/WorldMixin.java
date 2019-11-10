@@ -28,10 +28,10 @@ public abstract class WorldMixin {
     )
     private void broken(BlockPos blockPos_1, boolean boolean_1, CallbackInfoReturnable<Boolean> cir) {
         if(!this.isClient){
-            Block blockState = getBlockState(blockPos_1).getBlock();
+            Block block = getBlockState(blockPos_1).getBlock();
             ServerWorld world = (ServerWorld)(Object) this;
 
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) blockState, "broken",ServerCommandSourceFactory.INSTANCE.create(world.getServer(), world, blockState, blockPos_1));
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) block, "broken",ServerCommandSourceFactory.INSTANCE.create(world.getServer(), world, block, blockPos_1));
         }
     }
 

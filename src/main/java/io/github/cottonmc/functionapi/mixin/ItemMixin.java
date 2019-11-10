@@ -14,7 +14,6 @@ public abstract class ItemMixin {
 
     private Identifier thisId = null;
 
-
     /**
      * Dynamically gets the id of this item instance.
      */

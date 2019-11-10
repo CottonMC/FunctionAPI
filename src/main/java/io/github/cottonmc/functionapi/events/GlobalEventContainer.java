@@ -1,7 +1,6 @@
 package io.github.cottonmc.functionapi.events;
 
 import io.github.cottonmc.functionapi.api.ScriptedObject;
-import io.github.cottonmc.functionapi.events.internal.ServerTarget;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
@@ -51,7 +50,7 @@ public class GlobalEventContainer {
      */
     public void initCallback(Identifier eventManagerID, MinecraftServer server) {
         Identifier callbackID = new Identifier(eventManagerID.getNamespace(), eventManagerID.getPath() + "_create_callback");
-        EventManager managerCallback = new EventManager(new ServerTarget(), callbackID);
+        EventManager managerCallback = new EventManager(Target.SERVER_TARGET, callbackID);
         managerCallback.fire(server.getCommandSource());
     }
 
@@ -118,7 +117,8 @@ public class GlobalEventContainer {
         return event.hasEvents();
     }
 
-    public void executeEventBlocking(ScriptedObject target, String name, ServerCommandSource serverCommandSource) {
+    public ServerCommandSource executeEventBlocking(ScriptedObject target, String name, ServerCommandSource serverCommandSource) {
         createEvent(target, name).fireBlocking(serverCommandSource);
+        return serverCommandSource;
     }
 }

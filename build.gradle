@@ -1,3 +1,5 @@
+import java.util.regex.Pattern
+
 plugins {
     id 'fabric-loom' version '0.2.4-SNAPSHOT'
     id 'maven-publish'
@@ -273,10 +275,10 @@ def entityEvents = [
 ]
 
 def livingEntityEvents = [
-        "attacking","death"
+        "attacking", "death"
 ]
 
-task removeGeneratedData(type:Delete){
+task removeGeneratedData(type: Delete) {
     delete project.ext.generatedResources
 }
 
@@ -318,7 +320,7 @@ task generateEntityEventFunctions {
 
         }
 
-        livingEntityEvents.each {eventName->
+        livingEntityEvents.each { eventName ->
             (livingEntity).each { entityName ->
 
                 file(generatedMinecraftResources + "/$entityName/run_${entityName}_${eventName}.mcfunction").with {
@@ -353,3 +355,91 @@ task generateEntityEventFunctions {
 
 
 classes.dependsOn generateEntityEventFunctions
+
+
+task generateEventReference() {
+    doLast {
+        FileTree tree = fileTree('src')
+        def doc = new File("docs/eventReference.md")
+
+        doc.write("""
+Function API Event reference. This document has been generated from the source code of the mod!
+
+The event names are normal identifiers. To get the tag that you can use to bind a function file is as follows:
+
+event name: `minecraft:block/dirt/broken`
+
+tag name: `minecraft:function_api/block/dirt/broken`
+
+
+If an event is blocking, then it will pause the game until the execution is done, so it CAN cause lagspikes! (non blocking events will run when the server has time for it)
+
+| name  | includes | blocking |
+|---|---|---|
+""")
+        
+        tree.each { file ->
+            Pattern pattern = Pattern.compile("GlobalEventContainer\\.getInstance\\(\\)\\.execute(Event|EventBlocking)\\((.*?), \"(.*?)\",([^;\n]+|[^{])")
+            def found = file.readLines().join("\n").findAll(pattern)
+            if (!found.isEmpty()) {
+                println(file.name)
+                found.each {
+
+                    def params = it.replaceAll("^GlobalEventContainer\\.getInstance\\(\\)\\.executeEvent(|Blocking)\\(", "")
+                    params = params.split(",", 3)
+                    switch (params[0]) {
+                        case "(ScriptedObject) blockState.getBlock()":
+                        case "(ScriptedObject) this.getBlock()":
+                        case "(ScriptedObject) block":
+                            params[0] = "block"
+                            break;
+                        case "Target.ENTITY_TARGET":
+                            params[0] = "entity"
+                            break;
+                        default:
+                            if (file.name == "BlockMixin.java")
+                                params[0] = "block"
+                            break;
+                    }
+                    params[1] = params[1].replaceAll("\"","").trim()
+
+                    def components = params[2]
+                            .replaceAll("ServerCommandSourceFactory.INSTANCE.create\\(", "")
+                            .replaceAll("\\)\\)\\) \\{", "")
+                            .replaceAll("\\)\\)", "")
+                            .split(",")
+                            //.reverse()
+                            .toList()
+                    
+                    components.removeAt(0)
+                    components.removeAt(0)
+
+                    if(components.size() ==1){
+                        components ="The source entity, running it it's position"
+                    }
+                    if(components.size() ==2){
+                        components ="The source block, running it it's position"
+                    }
+                    if(components.size() ==3){
+                        components ="The source block, running it it's position, also the entity that is the source of this interaction"
+                    }
+
+                    def isBlocking = "No"
+                    
+                    if(params[1].contains("before/")){
+                        isBlocking = "Yes, can be cancelled!"
+                    }
+                    if(params[1].contains("after/") ){
+                        isBlocking = "Yes"
+                    }
+                    
+                    println(components)
+                    doc.append("| \\<namespace\\>:${params[0]}/\\<name\\>/${params[1]}|${components}|$isBlocking|\n")
+
+                    println(params)
+
+                }
+            }
+        }
+    }
+}

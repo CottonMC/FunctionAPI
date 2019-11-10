@@ -6,7 +6,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.cottonmc.functionapi.api.CommandSourceExtension;
 import io.github.cottonmc.functionapi.events.EventManager;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
-import io.github.cottonmc.functionapi.events.internal.DummyTarget;
+import io.github.cottonmc.functionapi.events.Target;
 import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -114,7 +114,7 @@ public class EventCommand {
                                                     Identifier group = commandContext_1.getArgument("target name", Identifier.class);
                                                     String eventName = commandContext_1.getArgument("eventName", String.class);
 
-                                                    DummyTarget dummyTarget = new DummyTarget(group, "api");
+                                                    Target dummyTarget = new Target(group, "api");
                                                     EventManager eventManager = new EventManager(dummyTarget, eventName);
 
                                                     EventManager manager = GlobalEventContainer.getInstance().getManager(eventManager.getID());
@@ -135,7 +135,8 @@ public class EventCommand {
                                                             String type = commandContext_1.getArgument("type", String.class);
 
 
-                                                            DummyTarget dummyTarget = new DummyTarget(group, type);
+                                                            Target dummyTarget = new Target(group, type);
+
                                                             EventManager eventManager = new EventManager(dummyTarget, eventName);
 
                                                             EventManager manager = GlobalEventContainer.getInstance().getManager(eventManager.getID());

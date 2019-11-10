@@ -39,15 +39,14 @@ public abstract class ItemStackMixin {
         BlockPos blockPos = itemUsageContext.getBlockPos();
 
         if (!world.isClient()) {
-            ScriptedObject target = (ScriptedObject) this.getItem();
+            ScriptedObject item = (ScriptedObject) this.getItem();
 
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos, itemUsageContext.getPlayer());
             if (itemUsageContext.getHand() == Hand.MAIN_HAND) {
-                if (GlobalEventContainer.getInstance().executeEvent(target, "use_on_block", serverCommandSource)) {
+                if (GlobalEventContainer.getInstance().executeEvent(item, "use_on_block", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos, itemUsageContext.getPlayer()))) {
                     cir.setReturnValue(ActionResult.SUCCESS);
                 }
             } else {
-                if (GlobalEventContainer.getInstance().executeEvent(target, "use_on_block_offhand", serverCommandSource)) {
+                if (GlobalEventContainer.getInstance().executeEvent(item, "use_on_block_offhand", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos, itemUsageContext.getPlayer()))) {
                     cir.setReturnValue(ActionResult.SUCCESS);
                 }
             }
@@ -67,15 +66,14 @@ public abstract class ItemStackMixin {
         BlockPos blockPos = itemUsageContext.getBlockPos();
 
         if (!world.isClient()) {
-            ScriptedObject target = (ScriptedObject) this.getItem();
+            ScriptedObject item = (ScriptedObject) this.getItem();
 
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos, itemUsageContext.getPlayer());
             if (itemUsageContext.getHand() == Hand.MAIN_HAND) {
-                if (GlobalEventContainer.getInstance().executeEvent(target, "before/use_on_block", serverCommandSource)) {
+                if (GlobalEventContainer.getInstance().executeEvent(item, "before/use_on_block", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos, itemUsageContext.getPlayer()))) {
                     cir.setReturnValue(ActionResult.SUCCESS);
                 }
             } else {
-                if (GlobalEventContainer.getInstance().executeEvent(target, "before/use_on_block_offhand", serverCommandSource)) {
+                if (GlobalEventContainer.getInstance().executeEvent(item, "before/use_on_block_offhand", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, world.getBlockState(blockPos).getBlock(), blockPos, itemUsageContext.getPlayer()))) {
                     cir.setReturnValue(ActionResult.SUCCESS);
                 }
             }
@@ -93,15 +91,15 @@ public abstract class ItemStackMixin {
         World world = livingEntity_1.world;
 
         if (!world.isClient()) {
-            ScriptedObject target = (ScriptedObject) this.getItem();
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, livingEntity_1);
+            ScriptedObject item = (ScriptedObject) this.getItem();
+
             if (hand_1 == Hand.MAIN_HAND) {
-                GlobalEventContainer.getInstance().executeEventBlocking(target, "before/use_on_entity", serverCommandSource);
+                ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking(item, "before/use_on_entity", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, livingEntity_1));
                 if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
                     cir.setReturnValue(false);
                 }
             } else {
-                GlobalEventContainer.getInstance().executeEventBlocking(target, "before/use_on_entity_offhand", serverCommandSource);
+                ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking(item, "before/use_on_entity_offhand", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, livingEntity_1));
                 if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
                     cir.setReturnValue(false);
                 }
@@ -120,14 +118,13 @@ public abstract class ItemStackMixin {
         World world = livingEntity_1.world;
 
         if (!world.isClient()) {
-            ScriptedObject target = (ScriptedObject) this.getItem();
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, livingEntity_1);
+            ScriptedObject item = (ScriptedObject) this.getItem();
             if (hand_1 == Hand.MAIN_HAND) {
-                if(GlobalEventContainer.getInstance().executeEvent(target, "use_on_entity", serverCommandSource)){
+                if (GlobalEventContainer.getInstance().executeEvent(item, "use_on_entity", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, livingEntity_1))) {
                     cir.setReturnValue(true);
                 }
             } else {
-                if(GlobalEventContainer.getInstance().executeEvent(target, "use_on_entity_offhand", serverCommandSource)){
+                if (GlobalEventContainer.getInstance().executeEvent(item, "use_on_entity_offhand", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, livingEntity_1))) {
                     cir.setReturnValue(true);
                 }
             }

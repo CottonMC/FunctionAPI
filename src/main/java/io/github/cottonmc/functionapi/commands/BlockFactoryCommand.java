@@ -1,15 +1,20 @@
 package io.github.cottonmc.functionapi.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import net.minecraft.command.arguments.BlockPosArgumentType;
+import net.minecraft.command.arguments.PosArgument;
 import net.minecraft.item.Item;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.math.Direction;
 
 public class BlockFactoryCommand {
 
-    //allows us to run events on their own, out of context
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher_1) {
         commandDispatcher_1.register(
                 CommandManager.literal("functionapi_debug")
@@ -28,4 +33,6 @@ public class BlockFactoryCommand {
 
         );
     }
+
+
 }

@@ -68,9 +68,6 @@ public class Registration {
 
             TemplatedBlock.currentTemplate = blockTemplate;
             switch (blockTemplate.getType()) {
-                case STAIRS:
-                    block = new TemplatedStairs(blockTemplate, settings);
-                    break;
                 case SLAB:
                     block = new TemplatedSlab(blockTemplate, settings);
                     break;

@@ -1,6 +1,6 @@
 package io.github.cottonmc.functionapi.content.templates;
 
-import io.github.cottonmc.functionapi.content.templates.state.StringBlockstateProperty;
+import io.github.cottonmc.functionapi.content.templates.state.StringBlockStateProperty;
 import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.Material;
@@ -56,9 +56,9 @@ public class BlockTemplate {
     
     public void addToStringProperty(String name,String value) {
         if(!stateProperties.containsKey(name)){
-            stateProperties.put(name,new StringBlockstateProperty(name, value));
+            stateProperties.put(name,new StringBlockStateProperty(name, value));
         }else{
-            ((StringBlockstateProperty)stateProperties.get(name)).addValue(value);
+            ((StringBlockStateProperty)stateProperties.get(name)).addValue(value);
         }
     }
 

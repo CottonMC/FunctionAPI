@@ -3,7 +3,10 @@
   "package": "io.github.cottonmc.functionapi.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ServerMixin","ItemMixin","EntityMixin","LivingEntityMixin","WorldMixin","BlockMixin","BlockStateMixin","ItemStackMixin","ServerCommandSourceMixin"
+    "ServerMixin","WorldMixin","ServerCommandSourceMixin",
+    "ItemMixin","ItemStackMixin",
+    "EntityMixin","LivingEntityMixin",
+    "BlockMixin","BlockStateMixin","StairBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

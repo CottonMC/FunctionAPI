@@ -6,8 +6,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.github.cottonmc.functionapi.api.BiDirectionalCommand;
+import io.github.cottonmc.functionapi.api.CommandWithArgument;
 import io.github.cottonmc.functionapi.commands.inventory.*;
 import net.minecraft.command.arguments.*;
 import net.minecraft.server.command.CommandManager;
@@ -92,7 +92,7 @@ public class InventoryCommand {
                 .literal("block").then(sourceBlock);
     }
 
-    private static ArgumentBuilder<ServerCommandSource, LiteralArgumentBuilder<ServerCommandSource>> buildSourceBlockUseArgument(DirectionalCommand command) {
+    private static ArgumentBuilder<ServerCommandSource, LiteralArgumentBuilder<ServerCommandSource>> buildSourceBlockUseArgument(CommandWithArgument command) {
         RequiredArgumentBuilder<ServerCommandSource, PosArgument> sourceBlock = CommandManager.argument("sourceBlock", BlockPosArgumentType.blockPos());
 
         for (Direction value : Direction.values()) {
@@ -127,15 +127,5 @@ public class InventoryCommand {
                         .executes(command));
     }
 
-
-    @FunctionalInterface
-    public interface BiDirectionalCommand {
-        int execute(CommandContext<ServerCommandSource> context, Direction source, Direction target) throws CommandSyntaxException;
-    }
-
-    @FunctionalInterface
-    public interface DirectionalCommand {
-        int execute(CommandContext<ServerCommandSource> context, Direction direction);
-    }
 
 }

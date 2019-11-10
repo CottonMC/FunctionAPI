@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static io.github.cottonmc.functionapi.content.templates.impl.block.TemplatedBlock.currentTemplate;
+import static net.minecraft.block.StairsBlock.isStairs;
 
 /**
  * Block that takes the block template and builds up itself from it.
@@ -119,9 +120,6 @@ public class TemplatedStairs extends TemplatedBlock {
         return !isStairs(blockState_2) || blockState_2.get(FACING) != blockState_1.get(FACING) || blockState_2.get(HALF) != blockState_1.get(HALF);
     }
 
-    public static boolean isStairs(BlockState blockState_1) {
-        return blockState_1.getBlock() instanceof StairsBlock;
-    }
 
     public BlockState rotate(BlockState blockState_1, BlockRotation blockRotation_1) {
         return blockState_1.with(FACING, blockRotation_1.rotate(blockState_1.get(FACING)));

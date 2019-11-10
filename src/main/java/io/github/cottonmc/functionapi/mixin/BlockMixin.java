@@ -28,23 +28,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * adds scripting functionality to the block class.
  */
-@Mixin(value = Block.class,priority = 0)
-@Implements(@Interface(iface = ScriptedObject.class, prefix = "api_scripted$"))
+@Mixin(value = Block.class, priority = 0)
+@Implements(@Interface(iface = ScriptedObject.class, prefix = "api_scripted$", remap = Interface.Remap.NONE))
 public abstract class BlockMixin {
 
     private Identifier thisId = null;
-    private EventManager place;
-    private EventManager brake;
-    private EventManager exploded;
-    private EventManager steppedOn;
-    private EventManager entityLanded;
 
     @Inject(
             at = @At("TAIL"),
             method = "onPlaced"
     )
     private void place(World world_1, BlockPos blockPos_1, BlockState blockState_1, LivingEntity livingEntity_1, ItemStack itemStack_1, CallbackInfo ci) {
-        place = EventManager.execute(place, (ScriptedObject) this, "placed", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, livingEntity_1));
+        if (world_1 instanceof ServerWorld) {
+            GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "after/placed", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, livingEntity_1));
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this, "placed", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, livingEntity_1));
+        }
     }
 
 
@@ -54,14 +52,14 @@ public abstract class BlockMixin {
             cancellable = true
     )
     private void placeBefore(World world_1, BlockPos blockPos_1, BlockState blockState_1, LivingEntity livingEntity_1, ItemStack itemStack_1, CallbackInfo ci) {
-        if(world_1 instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, livingEntity_1);
-            GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "before/placed", serverCommandSource);
+        if (world_1 instanceof ServerWorld) {
+            ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "before/placed", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, livingEntity_1));
             if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
                 ci.cancel();
             }
         }
     }
+
 
     @Inject(
             at = @At("HEAD"),
@@ -69,9 +67,8 @@ public abstract class BlockMixin {
             cancellable = true
     )
     private void brokenBefore(IWorld world_1, BlockPos blockPos_1, BlockState blockState_1, CallbackInfo ci) {
-        if(world_1 instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create((ServerWorld) world_1, (Block) (Object) this, blockPos_1);
-            GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "before/broken", serverCommandSource);
+        if (world_1 instanceof ServerWorld) {
+            ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "before/broken", ServerCommandSourceFactory.INSTANCE.create((ServerWorld) world_1, (Block) (Object) this, blockPos_1));
 
             if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
                 ci.cancel();
@@ -84,7 +81,9 @@ public abstract class BlockMixin {
             method = "onBroken"
     )
     private void broken(IWorld world_1, BlockPos blockPos_1, BlockState blockState_1, CallbackInfo ci) {
-        brake = EventManager.execute(brake, (ScriptedObject) this, "broken", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1));
+        if (world_1 instanceof ServerWorld) {
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this, "broken", ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1));
+        }
     }
 
     @Inject(
@@ -92,25 +91,27 @@ public abstract class BlockMixin {
             method = "onDestroyedByExplosion"
     )
     private void exploded(World world_1, BlockPos blockPos_1, Explosion explosion_1, CallbackInfo ci) {
-        exploded = EventManager.execute(exploded, (ScriptedObject) this, "exploded", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1));
+        if (world_1 instanceof ServerWorld) {
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this, "exploded", ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1));
+        }
     }
 
 
     @Inject(at = @At("TAIL"), method = "onSteppedOn")
     private void onSteppedOn(World world_1, BlockPos blockPos_1, Entity entity_1, CallbackInfo ci) {
-        steppedOn = EventManager.execute(steppedOn, (ScriptedObject) this, "stepped_on", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
+        if (world_1 instanceof ServerWorld) {
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this, "stepped_on", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
+        }
     }
-
 
 
     @Inject(
             at = @At("HEAD"),
-            method = "onLandedUpon",cancellable = true
+            method = "onLandedUpon", cancellable = true
     )
     private void onLandedUponBefore(World world_1, BlockPos blockPos_1, Entity entity_1, float float_1, CallbackInfo ci) {
-        if(world_1 instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1);
-            GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "before/entity_landed", serverCommandSource);
+        if (world_1 instanceof ServerWorld) {
+            ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this, "before/entity_landed",  ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
 
             if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
                 ci.cancel();
@@ -123,7 +124,9 @@ public abstract class BlockMixin {
             method = "onLandedUpon"
     )
     private void onLandedUpon(World world_1, BlockPos blockPos_1, Entity entity_1, float float_1, CallbackInfo ci) {
-        entityLanded = EventManager.execute(entityLanded, (ScriptedObject) this, "entity_landed", world_1, () -> ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
+        if (world_1 instanceof ServerWorld) {
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this, "entity_landed", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
+        }
     }
 
     /**
