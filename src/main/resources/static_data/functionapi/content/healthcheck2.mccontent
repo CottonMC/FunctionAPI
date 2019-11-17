@@ -1,2 +1,2 @@
 print "including a command: function_api:include/included"
-include function_api:include/included
+include functionapi:include/included

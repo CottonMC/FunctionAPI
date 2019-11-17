@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "function_api",
+  "id": "functionapi",
   "version": "${version}",
 
   "name": "Function API",
-  "description": "Allows function files to hook into the game via different events.",
+  "description": "Allows function files to hook into the game via different events. Also features a command based content registration system.",
   "authors": [
     "Frontrider"
   ],
@@ -30,5 +30,7 @@
   },
   "suggests": {
     "flamingo": "*"
-  }
+  },
+  "custom": { "modmenu:api": false}
+
 }

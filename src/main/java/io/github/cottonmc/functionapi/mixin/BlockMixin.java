@@ -1,10 +1,9 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.api.CommandSourceExtension;
-import io.github.cottonmc.functionapi.api.ScriptedObject;
+import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
-import io.github.cottonmc.functionapi.events.EventManager;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
+import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -132,11 +131,11 @@ public abstract class BlockMixin {
     /**
      * Dynamically gets the id of this block instance.
      */
-    public Identifier api_scripted$getID() {
+    public io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier api_scripted$getID() {
         if (thisId == null) {
             thisId = Registry.BLOCK.getId((Block) (Object) this);
         }
-        return thisId;
+        return (io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier)thisId;
     }
 
     public String api_scripted$getType() {

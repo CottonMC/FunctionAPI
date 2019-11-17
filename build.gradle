@@ -1,7 +1,7 @@
 import java.util.regex.Pattern
 
 plugins {
-    id 'fabric-loom' version '0.2.4-SNAPSHOT'
+    id 'fabric-loom' version '0.2.6-SNAPSHOT'
     id 'maven-publish'
     id "com.jfrog.artifactory" version "4.9.0"
 }
@@ -25,16 +25,6 @@ if (rootProject.file('private.gradle').exists()) { //Publishing details
 minecraft {
 }
 
-ext.generatedResources = project.buildDir.absolutePath + "/generated/resources/"
-
-file(ext.generatedResources).mkdirs()
-sourceSets {
-    main {
-        resources {
-            srcDir project.ext.generatedResources
-        }
-    }
-}
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -43,10 +33,7 @@ dependencies {
     modApi "net.fabricmc.fabric-api:fabric-api:0.3.2+build.218-1.14"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-
-    modRuntime(group: 'io.github.cottonmc.cotton', name: 'cotton-datapack', version: '1.0.0-rc.1', classifier: 'dev') {
-        transitive = false
-    }
+    /*
     modRuntime(group: 'io.github.cottonmc.cotton', name: 'cotton-logging', version: '1.0.0-rc.1', classifier: 'dev') {
         transitive = false
     }
@@ -57,11 +44,18 @@ dependencies {
     modRuntime(group: 'io.github.cottonmc', name: 'Jankson', version: '1.0.0+j1.1.2', classifier: 'dev') {
         transitive = false
     }
+    */
+    
 
 
     modCompile(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0', classifier: 'dev')
     include(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0')
 
+    compile(project(":common"))
+    include(project(":common"))
+
+    modCompile(group: 'io.github.cottonmc.cotton', name: 'cotton-datapack', version: '1.0.0-rc.1', classifier: 'dev')
+    include(group: 'io.github.cottonmc.cotton', name: 'cotton-datapack', version: '1.0.0-rc.1')
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
@@ -175,192 +169,15 @@ artifactory {
     }
 }
 
-//Producing the entity event files.
-
-def entityNames = [
-        "item",
-        "experience_orb",
-        "area_effect_cloud",
-        "egg",
-        "leash_knot",
-        "painting",
-        "arrow",
-        "snowball",
-        "fireball",
-        "small_fireball",
-        "ender_pearl",
-        "eye_of_ender",
-        "potion",
-        "experience_bottle",
-        "item_frame",
-        "wither_skull",
-        "tnt",
-        "falling_block",
-        "firework_rocket",
-        "spectral_arrow",
-        "shulker_bullet",
-        "dragon_fireball",
-        "command_block_minecart",
-        "boat",
-        "minecart",
-        "chest_minecart",
-        "furnace_minecart",
-        "tnt_minecart",
-        "hopper_minecart",
-        "spawner_minecart",
-        "llama_spit",
-        "end_crystal",
-]
-def livingEntity = [
-        "elder_guardian",
-        "wither_skeleton",
-        "stray",
-        "husk",
-        "zombie_villager",
-        "skeleton_horse",
-        "zombie_horse",
-        "armor_stand",
-        "donkey",
-        "mule",
-        "evoker",
-        "vex",
-        "vindicator",
-        "illusioner",
-        "creeper",
-        "skeleton",
-        "spider",
-        "giant",
-        "zombie",
-        "slime",
-        "ghast",
-        "zombie_pigman",
-        "enderman",
-        "cave_spider",
-        "silverfish",
-        "blaze",
-        "magma_cube",
-        "ender_dragon",
-        "wither",
-        "bat",
-        "witch",
-        "endermite",
-        "guardian",
-        "shulker",
-        "pig",
-        "sheep",
-        "cow",
-        "chicken",
-        "squid",
-        "wolf",
-        "mooshroom",
-        "snow_golem",
-        "ocelot",
-        "iron_golem",
-        "horse",
-        "rabbit",
-        "polar_bear",
-        "llama",
-        "parrot",
-        "villager",
-        "player",
-        "pillager",
-        "drowned",
-        "phantom",
-        "ravager"
-]
-
-
-def entityEvents = [
-        "tick", "swim_start", "damage", "killed_other", "struck_by_lightning"
-]
-
-def livingEntityEvents = [
-        "attacking", "death"
-]
-
-task removeGeneratedData(type: Delete) {
-    delete project.ext.generatedResources
-}
-
-task generateEntityEventFunctions {
-    //we remove the generated folder, otherwise the check events become too long from constant appending.
-    dependsOn removeGeneratedData
-    doFirst {
-        def generatedResources = project.ext.generatedResources + "/data/functionapi/functions/api/entity"
-        def generatedMinecraftResources = project.ext.generatedResources + "/data/minecraft/functions/function_api/entity"
-
-        entityEvents.each { eventName ->
-            (entityNames + livingEntity).each { entityName ->
-
-                file(generatedMinecraftResources + "/$entityName/run_${entityName}_${eventName}.mcfunction").with {
-                    parentFile.mkdirs()
-                    it.write("event create minecraft:$entityName $eventName entity\n" +
-                            "event run minecraft:entity/$entityName/$eventName")
-                }
-
-                file(generatedResources + "/check_${eventName}.mcfunction").with {
-                    parentFile.mkdirs()
-                    it.append("execute if entity @s[type=minecraft:$entityName] run function minecraft:function_api/entity/$entityName/run_${entityName}_${eventName}\n")
-                }
-            }
-            def tagFolder = project.ext.generatedResources + "/data/functionapi/tags/functions/function_api/entity/entity/"
-
-            file(tagFolder + "/${eventName}.json").with {
-                it.parentFile.mkdirs()
-                it.write(
-                        """
-{
-  "replace": false,
-  "values": [
-     "functionapi:api/entity/check_${eventName}"
-  ]
-}
-""")
-            }
-
-        }
-
-        livingEntityEvents.each { eventName ->
-            (livingEntity).each { entityName ->
-
-                file(generatedMinecraftResources + "/$entityName/run_${entityName}_${eventName}.mcfunction").with {
-                    parentFile.mkdirs()
-                    it.write("event create minecraft:$entityName $eventName entity\n" +
-                            "event run minecraft:entity/$entityName/$eventName")
-                }
-
-                file(generatedResources + "/check_${eventName}.mcfunction").with {
-                    parentFile.mkdirs()
-                    it.append("execute if entity @s[type=minecraft:$entityName] run function minecraft:function_api/entity/$entityName/run_${entityName}_${eventName}\n")
-                }
-            }
-            def tagFolder = project.ext.generatedResources + "/data/functionapi/tags/functions/function_api/entity/entity/"
-
-            file(tagFolder + "/${eventName}.json").with {
-                it.parentFile.mkdirs()
-                it.write(
-                        """
-{
-  "replace": false,
-  "values": [
-     "functionapi:api/entity/check_${eventName}"
-  ]
-}
-""")
-            }
-
-        }
-    }
-}
-
-
-classes.dependsOn generateEntityEventFunctions
-
-
 task generateEventReference() {
+    group="documentation"
     doLast {
         FileTree tree = fileTree('src')
         def doc = new File("docs/eventReference.md")
+
+        def eventReference = file(project.buildDir.absolutePath+"/events.csv")
+
+        eventReference.write("")
 
         doc.write("""
 Function API Event reference. This document has been generated from the source code of the mod!
@@ -439,7 +256,7 @@ If an event is blocking, then it will pause the game until the execution is done
 
                     if (params[0] == "entity") {
                         doc.append("| function_api:${params[0]}/\\<name\\>/${params[1]}|Called when any entity calls \\<namespace\\>:${params[0]}/\\<name\\>/${params[1]}|${components}|$isBlocking|\n")
-
+                        eventReference.append("${params[0]},${params[1]}")
                     }
                     println(params)
 
@@ -464,3 +281,5 @@ If an event is blocking, then it will pause the game until the execution is done
 
     }
 }
+
+build.dependsOn generateEventReference

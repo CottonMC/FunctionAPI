@@ -24,28 +24,14 @@ If an event is blocking, then it will pause the game until the execution is done
 | \<namespace\>:block/\<name\>/entity_collided||The source block, running it it's position, also the entity that is the source of this interaction|No|
 | \<namespace\>:block/\<name\>/projectile_hit||The source block, running it it's position, also the entity that is the source of this interaction|No|
 | \<namespace\>:block/\<name\>/tick||The source block, running it it's position|No|
-| \<namespace\>:entity/\<name\>/attacking||The source entity, running it it's position|No|
-| function_api:entity/\<name\>/attacking|Called when any entity calls \<namespace\>:entity/\<name\>/attacking|The source entity, running it it's position|No|
-| \<namespace\>:entity/\<name\>/death||The source entity, running it it's position|No|
-| function_api:entity/\<name\>/death|Called when any entity calls \<namespace\>:entity/\<name\>/death|The source entity, running it it's position|No|
-| \<namespace\>:entity/\<name\>/before/damage||The source entity, running it it's position|Yes, can be cancelled!|
-| function_api:entity/\<name\>/before/damage|Called when any entity calls \<namespace\>:entity/\<name\>/before/damage|The source entity, running it it's position|Yes, can be cancelled!|
-| \<namespace\>:entity/\<name\>/damage||The source entity, running it it's position|No|
-| function_api:entity/\<name\>/damage|Called when any entity calls \<namespace\>:entity/\<name\>/damage|The source entity, running it it's position|No|
-| \<namespace\>:entity/\<name\>/shield_hit||The source entity, running it it's position|No|
-| function_api:entity/\<name\>/shield_hit|Called when any entity calls \<namespace\>:entity/\<name\>/shield_hit|The source entity, running it it's position|No|
-| \<namespace\>:entity/\<name\>/tick||The source entity, running it it's position|No|
-| function_api:entity/\<name\>/tick|Called when any entity calls \<namespace\>:entity/\<name\>/tick|The source entity, running it it's position|No|
-| \<namespace\>:entity/\<name\>/swim_start||The source entity, running it it's position|No|
-| function_api:entity/\<name\>/swim_start|Called when any entity calls \<namespace\>:entity/\<name\>/swim_start|The source entity, running it it's position|No|
-| \<namespace\>:entity/\<name\>/before/damage||The source entity, running it it's position|Yes, can be cancelled!|
-| function_api:entity/\<name\>/before/damage|Called when any entity calls \<namespace\>:entity/\<name\>/before/damage|The source entity, running it it's position|Yes, can be cancelled!|
-| \<namespace\>:entity/\<name\>/damage||The source entity, running it it's position|No|
-| function_api:entity/\<name\>/damage|Called when any entity calls \<namespace\>:entity/\<name\>/damage|The source entity, running it it's position|No|
-| \<namespace\>:entity/\<name\>/killed_other||The source entity, running it it's position|No|
-| function_api:entity/\<name\>/killed_other|Called when any entity calls \<namespace\>:entity/\<name\>/killed_other|The source entity, running it it's position|No|
-| \<namespace\>:entity/\<name\>/struck_by_lightning||The source entity, running it it's position|No|
-| function_api:entity/\<name\>/struck_by_lightning|Called when any entity calls \<namespace\>:entity/\<name\>/struck_by_lightning|The source entity, running it it's position|No|
+| \<namespace\>:(ScriptedObject)this/\<name\>/attacking||The source entity, running it it's position|No|
+| \<namespace\>:(ScriptedObject)this/\<name\>/death||The source entity, running it it's position|No|
+| \<namespace\>:(ScriptedObject)this/\<name\>/shield_hit||The source entity, running it it's position|No|
+| \<namespace\>:(ScriptedObject)this/\<name\>/tick||The source entity, running it it's position|No|
+| \<namespace\>:(ScriptedObject)this/\<name\>/swim_start||The source entity, running it it's position|No|
+| \<namespace\>:(ScriptedObject)this/\<name\>/before/damage||The source entity, running it it's position|Yes, can be cancelled!|
+| \<namespace\>:(ScriptedObject)this/\<name\>/damage||The source entity, running it it's position|No|
+| \<namespace\>:(ScriptedObject)this/\<name\>/struck_by_lightning||The source entity, running it it's position|No|
 | \<namespace\>:block/\<name\>/after/placed||The source block, running it it's position, also the entity that is the source of this interaction|Yes|
 | \<namespace\>:block/\<name\>/placed||The source block, running it it's position, also the entity that is the source of this interaction|No|
 | \<namespace\>:block/\<name\>/before/placed||The source block, running it it's position, also the entity that is the source of this interaction|Yes, can be cancelled!|

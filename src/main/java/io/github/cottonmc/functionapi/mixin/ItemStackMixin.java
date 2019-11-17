@@ -1,9 +1,8 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.api.CommandSourceExtension;
-import io.github.cottonmc.functionapi.api.ScriptedObject;
+import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
-import io.github.cottonmc.functionapi.events.EventManager;
+import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

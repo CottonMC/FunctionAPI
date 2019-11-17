@@ -1,8 +1,8 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.api.CommandSourceExtension;
-import io.github.cottonmc.functionapi.api.ScriptedObject;
+import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
+import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -67,7 +67,7 @@ public abstract class BlockStateMixin {
                 if (playerEntity_1.getOffHandStack().isEmpty())
                     serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject) this.getBlock(), "before/activate_offhand", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockHitResult_1.getBlockPos(), playerEntity_1));
             }
-            if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
+            if (serverCommandSource != null &&((CommandSourceExtension) serverCommandSource).isCancelled()) {
                 cir.setReturnValue(false);
             }
         }
@@ -95,8 +95,7 @@ public abstract class BlockStateMixin {
     @Inject(at=@At("TAIL"),method = "scheduledTick")
     private void onScheduledTick(World world_1, BlockPos blockPos_1, Random random_1, CallbackInfo ci){
         if (!world_1.isClient())
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "tick", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockPos_1));
-
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "tick", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockPos_1))/* Fired on every scheduled tick.*/;
     }
 
 }

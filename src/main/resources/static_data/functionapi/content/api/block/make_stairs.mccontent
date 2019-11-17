@@ -1,0 +1,8 @@
+blockplacement east all facing east
+blockplacement all upper half top
+blockplacement up all half top
+blockplacement all lower half bottom
+blockplacement down all half bottom
+
+
+

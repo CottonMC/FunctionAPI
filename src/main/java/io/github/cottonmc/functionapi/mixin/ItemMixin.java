@@ -1,6 +1,6 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.api.ScriptedObject;
+import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -17,11 +17,11 @@ public abstract class ItemMixin {
     /**
      * Dynamically gets the id of this item instance.
      */
-    public Identifier api_scripted$getID() {
+    public io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier api_scripted$getID() {
         if (thisId == null) {
             thisId = Registry.ITEM.getId((Item) (Object) this);
         }
-        return thisId;
+        return (io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier)thisId;
     }
 
     public String api_scripted$getType() {

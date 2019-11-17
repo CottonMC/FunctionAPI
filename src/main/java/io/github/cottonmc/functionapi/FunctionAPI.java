@@ -1,26 +1,31 @@
 package io.github.cottonmc.functionapi;
 
-import io.github.cottonmc.functionapi.commands.*;
-import io.github.cottonmc.functionapi.content.ContentRegistrationContext;
+import io.github.cottonmc.functionapi.content.ContentCommandExecutor;
+import io.github.cottonmc.functionapi.content.ContentRegistrationContextImpl;
 import io.github.cottonmc.functionapi.content.Registration;
-import io.github.cottonmc.functionapi.content.StaticCommandExecutor;
-import io.github.cottonmc.functionapi.content.commands.*;
+import io.github.cottonmc.functionapi.content.StaticCommandFileSource;
 import io.github.cottonmc.functionapi.events.EventManager;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import io.github.cottonmc.functionapi.events.Target;
+import io.github.cottonmc.functionapi.events.commands.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 
 public class FunctionAPI implements ModInitializer {
 
     public static final String MODID = "functionapi";
-    public static final StaticCommandExecutor<ContentRegistrationContext> CONTENT_REGISTRATION_COMMAND_EXECTUOR = new StaticCommandExecutor<>(
-            "content",
-            ContentRegistrationContextImpl::new,
-            Registration::accept);
+    public static final ContentCommandExecutor CONTENT_REGISTRATION_CONTEXT_COMMAND_EXECUTOR;
+
+
+    static {
+        CONTENT_REGISTRATION_CONTEXT_COMMAND_EXECUTOR = new ContentCommandExecutor.Builder().setContextFactory(ContentRegistrationContextImpl::new).setFileSource(new StaticCommandFileSource("content")).build();
+        ContentCommandExecutor.INSTANCE = CONTENT_REGISTRATION_CONTEXT_COMMAND_EXECUTOR;
+    }
+
 
     @Override
     public void onInitialize() {
+
 
         CommandRegistry.INSTANCE.register(false, EventCommand::register);
         CommandRegistry.INSTANCE.register(false, InventoryCommand::register);
@@ -28,16 +33,9 @@ public class FunctionAPI implements ModInitializer {
         CommandRegistry.INSTANCE.register(false, ScheduleBlockTickCommand::register);
         CommandRegistry.INSTANCE.register(false, BlockStateCommand::register);
 
-        CONTENT_REGISTRATION_COMMAND_EXECTUOR.register(PrintCommand::register);
-        CONTENT_REGISTRATION_COMMAND_EXECTUOR.register(IncludeCommand::register);
-        CONTENT_REGISTRATION_COMMAND_EXECTUOR.register(RegistrationCommand::register);
-        CONTENT_REGISTRATION_COMMAND_EXECTUOR.register(BlockSettingsCommand::register);
-        CONTENT_REGISTRATION_COMMAND_EXECTUOR.register(ItemSettingsCommand::register);
 
-
-        CONTENT_REGISTRATION_COMMAND_EXECTUOR.execute();
+        CONTENT_REGISTRATION_CONTEXT_COMMAND_EXECUTOR.execute(new Registration());
 
         GlobalEventContainer.getInstance().addManager(new EventManager(Target.SERVER_TARGET, "creation"));
     }
-
 }

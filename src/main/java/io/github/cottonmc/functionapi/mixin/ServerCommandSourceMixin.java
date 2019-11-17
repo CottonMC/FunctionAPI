@@ -1,6 +1,6 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.api.CommandSourceExtension;
+import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import net.minecraft.server.command.ServerCommandSource;
 import org.spongepowered.asm.mixin.Mixin;
 

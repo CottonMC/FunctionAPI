@@ -1,7 +1,7 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.api.ScriptedObject;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
+import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

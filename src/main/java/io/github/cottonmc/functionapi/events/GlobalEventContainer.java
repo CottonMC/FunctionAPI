@@ -1,26 +1,38 @@
 package io.github.cottonmc.functionapi.events;
 
-import io.github.cottonmc.functionapi.api.ScriptedObject;
+import io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier;
+import io.github.cottonmc.functionapi.api.script.ScriptedObject;
+import io.github.cottonmc.functionapi.script.FunctionAPIIdentifierImpl;
+import io.github.cottonmc.functionapi.script.FunctionManager;
+import io.github.cottonmc.functionapi.script.GlobalFunctionManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
 
 /**
  * Stores a reference to every event handler, so we can never duplicate them.
  */
-public class GlobalEventContainer {
+public class GlobalEventContainer extends GlobalFunctionManager<ServerCommandSource,MinecraftServer> {
 
     private static GlobalEventContainer INSTANCE;
 
-    private Map<Identifier, EventManager> eventManagerMap;
-
-    private boolean disabled = false;
-
     private GlobalEventContainer() {
-        eventManagerMap = new HashMap<>();
+        super();
     }
+
+
+    @Override
+    protected FunctionManager<ServerCommandSource,MinecraftServer> getNewManager(FunctionAPIIdentifier name) {
+        return new EventManager((Identifier) name);
+    }
+
+    @Override
+    protected FunctionManager<ServerCommandSource, MinecraftServer> getNewManager(ScriptedObject target, String name) {
+        return new EventManager(target,name);
+    }
+
+
 
     public static GlobalEventContainer getInstance() {
         if (INSTANCE == null)
@@ -29,96 +41,16 @@ public class GlobalEventContainer {
         return INSTANCE;
     }
 
-    /**
-     * Adds a new event manager to the system.
-     */
-    public void addManager(EventManager eventManager) {
-        Identifier eventManagerID = eventManager.getID();
-        eventManagerMap.put(eventManagerID, eventManager);
-        eventManager.markDirty();
-        if (this.disabled) {
-            eventManager.disable();
-        }
-    }
-
-    public EventManager createEvent(ScriptedObject target, String name) {
-        return addIfMissing(new EventManager(target, name));
-    }
 
     /**
      * Runs the initializtion callback for the event.
      */
-    public void initCallback(Identifier eventManagerID, MinecraftServer server) {
-        Identifier callbackID = new Identifier(eventManagerID.getNamespace(), eventManagerID.getPath() + "_create_callback");
-        EventManager managerCallback = new EventManager(Target.SERVER_TARGET, callbackID);
+    public void initCallback(FunctionAPIIdentifier eventManagerID, MinecraftServer server) {
+        FunctionAPIIdentifier callbackID = new FunctionAPIIdentifierImpl(eventManagerID.getNamespace(), eventManagerID.getPath() + "_create_callback");
+        EventManager managerCallback = new EventManager((Identifier) callbackID);
         managerCallback.fire(server.getCommandSource());
     }
 
-    public EventManager getManager(Identifier identifier) {
-        return eventManagerMap.get(identifier);
-    }
 
-    public Set<Identifier> getEventNames() {
-        return eventManagerMap.keySet();
-    }
 
-    public boolean enableEvent(Identifier identifier) {
-        EventManager eventManager = eventManagerMap.get(identifier);
-        if (eventManager == null)
-            return false;
-
-        eventManager.enable();
-        return true;
-    }
-
-    public boolean disableEvent(Identifier identifier) {
-        EventManager eventManager = eventManagerMap.get(identifier);
-        if (eventManager == null)
-            return false;
-
-        eventManager.disable();
-        return true;
-    }
-
-    public void disableAll() {
-        eventManagerMap.values().parallelStream().forEach(EventManager::disable);
-        this.disabled = true;
-    }
-
-    public void enableAll() {
-        eventManagerMap.values().parallelStream().forEach(EventManager::enable);
-        this.disabled = false;
-    }
-
-    public void markDirty() {
-        eventManagerMap.values().forEach(EventManager::markDirty);
-    }
-
-    public void clean() {
-        eventManagerMap.clear();
-    }
-
-    public boolean containsEvent(Identifier eventID) {
-        return eventManagerMap.containsKey(eventID);
-    }
-
-    public EventManager addIfMissing(EventManager eventManager) {
-        if (!containsEvent(eventManager.getID())) {
-            addManager(eventManager);
-            return eventManager;
-        }
-        return eventManagerMap.get(eventManager.getID());
-    }
-
-    public boolean executeEvent(ScriptedObject target, String name, ServerCommandSource serverCommandSource) {
-        EventManager event = createEvent(target, name);
-        event.fire(serverCommandSource);
-
-        return event.hasEvents();
-    }
-
-    public ServerCommandSource executeEventBlocking(ScriptedObject target, String name, ServerCommandSource serverCommandSource) {
-        createEvent(target, name).fireBlocking(serverCommandSource);
-        return serverCommandSource;
-    }
 }

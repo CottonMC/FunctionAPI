@@ -8,5 +8,13 @@ pluginManagement {
         mavenLocal()
         gradlePluginPortal()
     }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.namespace == 'fabric-loom') {
+                useModule('fabric-loom:fabric-loom.gradle.plugin:'+requested.version)
+            }
+        }
+    }
 }
 
+include "common"
