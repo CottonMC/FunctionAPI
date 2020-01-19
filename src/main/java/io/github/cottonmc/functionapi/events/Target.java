@@ -1,7 +1,7 @@
 package io.github.cottonmc.functionapi.events;
 
 import io.github.cottonmc.functionapi.FunctionAPI;
-import io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier;
+import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 
 public class Target implements ScriptedObject {
@@ -21,12 +21,12 @@ public class Target implements ScriptedObject {
     }
 
     @Override
-    public FunctionAPIIdentifier getID() {
+    public FunctionAPIIdentifier getEventID() {
         return ID;
     }
 
     @Override
-    public String getType() {
+    public String getEventType() {
         return type;
     }
 

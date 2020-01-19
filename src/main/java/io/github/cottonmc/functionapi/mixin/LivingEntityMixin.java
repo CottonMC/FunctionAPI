@@ -17,11 +17,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = LivingEntity.class, priority = 0)
-public abstract class LivingEntityMixin extends Entity {
+public abstract class LivingEntityMixin extends Entity{
 
-    @Shadow protected abstract boolean method_6061(DamageSource damageSource_1);
 
-    @Shadow public abstract boolean method_6039();
+    @Shadow public abstract boolean isBlocking();
 
     public LivingEntityMixin(EntityType<?> entityType_1, World world_1) {
         super(entityType_1, world_1);
@@ -31,7 +30,8 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(at = @At("HEAD"), method = "onAttacking")
     private void onAttacking(Entity entity_1, CallbackInfo ci) {
         if (world instanceof ServerWorld) {
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject)this, "attacking", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
+            ScriptedObject entity = (ScriptedObject) this;
+            GlobalEventContainer.getInstance().executeEvent(entity, "attacking", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
         }
     }
 
@@ -41,7 +41,8 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(at = @At("HEAD"), method = "onDeath")
     private void onDeath(DamageSource damageSource_1, CallbackInfo ci) {
         if (world instanceof ServerWorld) {
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject)this, "death", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
+            ScriptedObject entity = (ScriptedObject) this;
+            GlobalEventContainer.getInstance().executeEvent(entity, "death", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
         }
 
     }
@@ -49,8 +50,9 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(at = @At("TAIL"), method = "damage", cancellable = true)
     private void damaged(DamageSource damageSource_1, float float_1, CallbackInfoReturnable<Boolean> cir) {
         if (world instanceof ServerWorld) {
-            if (method_6039()) {
-                GlobalEventContainer.getInstance().executeEvent((ScriptedObject)this, "shield_hit", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
+            if (isBlocking()) {
+                ScriptedObject entity = (ScriptedObject) this;
+                GlobalEventContainer.getInstance().executeEvent(entity, "shield_hit", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
             }
         }
     }

@@ -31,20 +31,20 @@ public abstract class BlockStateMixin {
 
     @Inject(
             at = @At("RETURN"),
-            method = "activate",
+            method = "onUse",
             cancellable = true
     )
-    private void activate(World world_1, PlayerEntity playerEntity_1, Hand hand_1, BlockHitResult blockHitResult_1, CallbackInfoReturnable<Boolean> cir) {
-        if (!world_1.isClient()) {
+    private void activate(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult, CallbackInfoReturnable<Boolean> cir) {
+        if (!world.isClient()) {
 
-            if (hand_1 == Hand.MAIN_HAND) {
-                if (playerEntity_1.getMainHandStack().isEmpty())
-                    if (GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "activate", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockHitResult_1.getBlockPos(), playerEntity_1))) {
+            if (hand == Hand.MAIN_HAND) {
+                if (playerEntity.getMainHandStack().isEmpty())
+                    if (GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "activate", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, this.getBlock(), blockHitResult.getBlockPos(), playerEntity))) {
                         cir.setReturnValue(true);
                     }
             } else {
-                if (playerEntity_1.getOffHandStack().isEmpty())
-                    if (GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "activate_offhand", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockHitResult_1.getBlockPos(), playerEntity_1))) {
+                if (playerEntity.getOffHandStack().isEmpty())
+                    if (GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "activate_offhand", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, this.getBlock(), blockHitResult.getBlockPos(), playerEntity))) {
                         cir.setReturnValue(true);
                     }
             }
@@ -53,7 +53,7 @@ public abstract class BlockStateMixin {
 
     @Inject(
             at = @At("HEAD"),
-            method = "activate",
+            method = "onUse",
             cancellable = true
     )
     private void activateBefore(World world_1, PlayerEntity playerEntity_1, Hand hand_1, BlockHitResult blockHitResult_1, CallbackInfoReturnable<Boolean> cir) {
@@ -93,9 +93,8 @@ public abstract class BlockStateMixin {
     }
 
     @Inject(at=@At("TAIL"),method = "scheduledTick")
-    private void onScheduledTick(World world_1, BlockPos blockPos_1, Random random_1, CallbackInfo ci){
-        if (!world_1.isClient())
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "tick", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockPos_1))/* Fired on every scheduled tick.*/;
+    private void onScheduledTick(ServerWorld serverWorld, BlockPos blockPos, Random random, CallbackInfo ci){
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "tick", ServerCommandSourceFactory.INSTANCE.create(serverWorld.getServer(), serverWorld, this.getBlock(), blockPos))/* Fired on every scheduled tick.*/;
     }
 
 }

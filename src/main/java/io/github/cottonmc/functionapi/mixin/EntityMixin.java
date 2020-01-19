@@ -1,6 +1,7 @@
 package io.github.cottonmc.functionapi.mixin;
 
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
+import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
@@ -21,11 +22,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+
 /**
  * generic entity events.
  */
 @Mixin(value = Entity.class, priority = 0)
-@Implements(@Interface(iface = ScriptedObject.class,prefix = "scripted$"))
+@Implements(@Interface(iface = ScriptedObject.class,prefix = "api_scripted$"))
 public abstract class EntityMixin{
 
     @Shadow
@@ -34,9 +36,10 @@ public abstract class EntityMixin{
     @Shadow
     public World world;
 
+    @Shadow public abstract EntityType<?> getType();
+
     private Identifier thisId = null;
 
-    @Shadow public abstract EntityType<?> getType();
 
     @Inject(
             at = @At("HEAD"),
@@ -44,7 +47,8 @@ public abstract class EntityMixin{
     )
     private void tick(CallbackInfo ci) {
         if (world instanceof ServerWorld) {
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject)this, "tick", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
+            ScriptedObject entity = (ScriptedObject) this;
+            GlobalEventContainer.getInstance().executeEvent(entity, "tick", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
         }
     }
 
@@ -54,43 +58,47 @@ public abstract class EntityMixin{
     )
     private void swimStart(CallbackInfo ci) {
         if (world instanceof ServerWorld) {
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject)this, "swim_start", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
+            ScriptedObject entity = (ScriptedObject) this;
+            GlobalEventContainer.getInstance().executeEvent(entity, "swim_start", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
         }
     }
 
     @Inject(at = @At("HEAD"), method = "damage",
             cancellable = true)
     private void damagedBEFORE(DamageSource damageSource_1, float float_1, CallbackInfoReturnable<Boolean> cir) {
+        ScriptedObject entity = (ScriptedObject) this;
+
         if (world instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject)this, "before/damage", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
+            ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking(entity, "before/damage", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
 
             if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
                 cir.cancel();
             }
         }
-        GlobalEventContainer.getInstance().executeEvent((ScriptedObject)this, "damage", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
+        GlobalEventContainer.getInstance().executeEvent(entity, "damage", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
     }
 
     @Inject(at = @At("HEAD"), method = "onStruckByLightning")
     private void onStruckByLightning(LightningEntity lightningEntity_1, CallbackInfo ci) {
         if (world instanceof ServerWorld) {
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject)this, "struck_by_lightning", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
+            ScriptedObject entity = (ScriptedObject) this;
+            GlobalEventContainer.getInstance().executeEvent(entity, "struck_by_lightning", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
         }
     }
 
 
 
-    public io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier scripted$getID() {
+    public FunctionAPIIdentifier api_scripted$getEventID() {
         if(thisId == null){
             if((Entity)(Object)this instanceof PlayerEntity){
                 thisId = new Identifier("player");
             }else
             thisId= Registry.ENTITY_TYPE.getId(this.getType());
         }
-        return (io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier) thisId;
+        return (FunctionAPIIdentifier) thisId;
     }
 
-    public String scripted$getType() {
+    public String api_scripted$getEventType() {
         return "entity";
     }
 }

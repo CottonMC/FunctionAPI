@@ -3,7 +3,9 @@ package io.github.cottonmc.functionapi.events.commands.inventory;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.cottonmc.functionapi.api.commands.BiDirectionalCommand;
+import io.github.cottonmc.functionapi.Util;
+import io.github.cottonmc.functionapi.api.commands.CommandWithTwoArguments;
+import io.github.cottonmc.functionapi.api.content.enums.Direction;
 import io.github.cottonmc.functionapi.events.commands.inventory.util.FloatingItemInventory;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.command.arguments.BlockPosArgumentType;
@@ -18,17 +20,16 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class MoveItem implements BiDirectionalCommand<ServerCommandSource,Direction> {
+public class MoveItem implements CommandWithTwoArguments<ServerCommandSource, Direction> {
 
-    public static final BiDirectionalCommand UNFILTERED = new MoveItem((context -> itemStack -> itemStack.getCount() > 0 && itemStack.getItem() != Items.AIR));
+    public static final CommandWithTwoArguments UNFILTERED = new MoveItem((context -> itemStack -> itemStack.getCount() > 0 && itemStack.getItem() != Items.AIR));
 
-    public static final BiDirectionalCommand FILTERED = new MoveItem((context -> {
+    public static final CommandWithTwoArguments FILTERED = new MoveItem((context -> {
         try {
             return ItemPredicateArgumentType.getItemPredicate(context, "item");
         } catch (CommandSyntaxException e) {
@@ -126,7 +127,7 @@ public class MoveItem implements BiDirectionalCommand<ServerCommandSource,Direct
             }
 
             if (sourceInventory instanceof SidedInventory) {
-                if (!((SidedInventory) sourceInventory).canExtractInvStack(movedSlot, moved, source)) {
+                if (!((SidedInventory) sourceInventory).canExtractInvStack(movedSlot, moved, Util.getDirection(source))) {
                     context.getSource().sendError(new TranslatableText("hu.frontrider.functionapi.command.source.cant"));
                     return 0;
                 } else {
@@ -142,7 +143,7 @@ public class MoveItem implements BiDirectionalCommand<ServerCommandSource,Direct
         return 1;
     }
 
-    int moveitem(ItemStack moved, int amount, Inventory sourceInventory, Inventory targetInventory, Direction target) {
+    private int moveitem(ItemStack moved, int amount, Inventory sourceInventory, Inventory targetInventory, Direction target) {
         ItemStack copy = moved.copy();
 
         int transferred;
@@ -162,7 +163,7 @@ public class MoveItem implements BiDirectionalCommand<ServerCommandSource,Direct
             moved.setCount(0);
         }
 
-        HopperBlockEntity.transfer(sourceInventory, targetInventory, copy, target);
+        HopperBlockEntity.transfer(sourceInventory, targetInventory, copy, Util.getDirection(target));
         return amount;
     }
 }

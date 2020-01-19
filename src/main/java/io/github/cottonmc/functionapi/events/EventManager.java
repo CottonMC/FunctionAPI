@@ -1,9 +1,10 @@
 package io.github.cottonmc.functionapi.events;
 
+import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.api.script.CommandRunner;
-import io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.script.FunctionManager;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
+import io.github.cottonmc.functionapi.util.FunctionAPIIdentifierImpl;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -25,8 +26,8 @@ public class EventManager extends FunctionManager<ServerCommandSource,MinecraftS
         super(createID(target, eventName), false);
     }
 
-    public EventManager(Identifier callbackID) {
-        super((FunctionAPIIdentifier) callbackID);
+    public EventManager(FunctionAPIIdentifier callbackID) {
+        super(callbackID);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class EventManager extends FunctionManager<ServerCommandSource,MinecraftS
     }
 
     public static FunctionAPIIdentifier createID(ScriptedObject target, String eventName) {
-        return (FunctionAPIIdentifier) new Identifier(target.getID().getNamespace(), target.getType() + "/" + target.getID().getPath() + "/" + eventName);
+        return (FunctionAPIIdentifier) new Identifier(target.getEventID().getNamespace(), target.getEventType() + "/" + target.getEventID().getPath() + "/" + eventName);
     }
 
 
@@ -84,5 +85,4 @@ public class EventManager extends FunctionManager<ServerCommandSource,MinecraftS
         }
         return null;
     }
-
 }

@@ -13,13 +13,21 @@ archivesBaseName = "function-api"
 version = project.mod_version
 group = project.maven_group
 
-repositories {
-    mavenCentral()
-    maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
-}
+allprojects{
 
-if (rootProject.file('private.gradle').exists()) { //Publishing details
-    apply from: 'private.gradle'
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
+        maven {
+            url "https://libraries.minecraft.net"
+        }
+    }
+
+    if (rootProject.file('private.gradle').exists()) { //Publishing details
+        apply from: rootProject.rootDir.absolutePath+'/private.gradle'
+    }
+    apply plugin:"idea"
 }
 
 minecraft {
@@ -30,32 +38,12 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}"
     modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:0.3.2+build.218-1.14"
-
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    /*
-    modRuntime(group: 'io.github.cottonmc.cotton', name: 'cotton-logging', version: '1.0.0-rc.1', classifier: 'dev') {
-        transitive = false
-    }
-    modRuntime(group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.1', classifier: 'dev') {
-        transitive = false
-    }
-    //modCompile(group: 'io.github.cottonmc', name: 'cotton-scripting', version: '1.2.0+1.14', classifier: 'dev')
-    modRuntime(group: 'io.github.cottonmc', name: 'Jankson', version: '1.0.0+j1.1.2', classifier: 'dev') {
-        transitive = false
-    }
-    */
+    modApi "net.fabricmc.fabric-api:fabric-api:$fabric_version"
     
+    compile("io.github.cottonmc:functionapi-scripting:1.0")
+    include("io.github.cottonmc:functionapi-scripting:1.0")
 
-
-    modCompile(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0', classifier: 'dev')
-    include(group: 'io.github.cottonmc', name: 'StaticData', version: '1.0.0')
-
-    compile(project(":common"))
-    include(project(":common"))
-
-    modCompile(group: 'io.github.cottonmc.cotton', name: 'cotton-datapack', version: '1.0.0-rc.1', classifier: 'dev')
-    include(group: 'io.github.cottonmc.cotton', name: 'cotton-datapack', version: '1.0.0-rc.1')
+    include("io.github.cottonmc:functionapi-api:1.0")
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
@@ -98,9 +86,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-
-            artifactId = project.archives_base_name
-
+            
 
             pom.withXml {
                 def pomFile = asNode()

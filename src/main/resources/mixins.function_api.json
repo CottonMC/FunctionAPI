@@ -6,8 +6,7 @@
     "ServerMixin","WorldMixin","ServerCommandSourceMixin",
     "ItemMixin","ItemStackMixin",
     "EntityMixin","LivingEntityMixin",
-    "BlockMixin","BlockStateMixin","StairBlockMixin",
-    "ItemCapabilityMixin",
+    "BlockMixin","BlockStateMixin",
     "IdentifierMixin"
   ],
   "injectors": {

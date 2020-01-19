@@ -1,12 +1,14 @@
 package io.github.cottonmc.functionapi.mixin;
 
 
+import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.*;
 
 @Mixin(Identifier.class)
-@Implements(@Interface(iface = io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier.class,prefix = "id$"))
-public abstract class IdentifierMixin{
+@Implements(@Interface(iface = FunctionAPIIdentifier.class,prefix = "id$"))
+public abstract class IdentifierMixin //implements FunctionAPIIdentifier
+{
     @Shadow @Final protected String namespace;
 
     @Shadow @Final protected String path;

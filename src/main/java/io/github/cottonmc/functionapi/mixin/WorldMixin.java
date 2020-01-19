@@ -5,6 +5,7 @@ import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,12 +27,12 @@ public abstract class WorldMixin {
             at = @At("HEAD"),
             method = "breakBlock"
     )
-    private void broken(BlockPos blockPos_1, boolean boolean_1, CallbackInfoReturnable<Boolean> cir) {
+    private void broken(BlockPos blockPos, boolean bl, Entity entity, CallbackInfoReturnable<Boolean> cir) {
         if(!this.isClient){
-            Block block = getBlockState(blockPos_1).getBlock();
+            Block block = getBlockState(blockPos).getBlock();
             ServerWorld world = (ServerWorld)(Object) this;
 
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) block, "broken",ServerCommandSourceFactory.INSTANCE.create(world.getServer(), world, block, blockPos_1));
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) block, "broken",ServerCommandSourceFactory.INSTANCE.create(world.getServer(), world, block, blockPos));
         }
     }
 

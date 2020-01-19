@@ -3,9 +3,9 @@ package io.github.cottonmc.functionapi.events.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
-import io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier;
-import io.github.cottonmc.functionapi.content.commands.arguments.FunctionAPIIdentifierArgumentType;
+import io.github.cottonmc.functionapi.commands.arguments.FunctionAPIIdentifierArgumentType;
 import io.github.cottonmc.functionapi.events.EventManager;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import io.github.cottonmc.functionapi.events.Target;
@@ -64,7 +64,7 @@ public class EventCommand {
                         .then(CommandManager.literal("list")
                                 .executes((commandContext) -> {
 
-                                    for (io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier identifier : GlobalEventContainer.getInstance().getEventNames()) {
+                                    for (FunctionAPIIdentifier identifier : GlobalEventContainer.getInstance().getEventNames()) {
                                         commandContext.getSource()
                                                 .sendFeedback(new LiteralText(identifier.toString()), true);
                                     }

@@ -1,5 +1,6 @@
 package io.github.cottonmc.functionapi.mixin;
 
+import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -10,21 +11,21 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(value = Item.class,priority = 0)
 @Implements(@Interface(iface = ScriptedObject.class, prefix = "api_scripted$"))
-public abstract class ItemMixin {
+public abstract class ItemMixin implements ScriptedObject {
 
     private Identifier thisId = null;
 
     /**
      * Dynamically gets the id of this item instance.
      */
-    public io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier api_scripted$getID() {
+    public FunctionAPIIdentifier api_scripted$getEventID() {
         if (thisId == null) {
             thisId = Registry.ITEM.getId((Item) (Object) this);
         }
-        return (io.github.cottonmc.functionapi.api.script.FunctionAPIIdentifier)thisId;
+        return (FunctionAPIIdentifier)thisId;
     }
 
-    public String api_scripted$getType() {
+    public String api_scripted$getEventType() {
         return "item";
     }
 }

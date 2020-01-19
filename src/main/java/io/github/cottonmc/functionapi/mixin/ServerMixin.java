@@ -1,6 +1,5 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.content.ToolTagHelper;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.LevelProperties;
@@ -22,7 +21,6 @@ public abstract class ServerMixin {
     private void reload(LevelProperties levelProperties_1, CallbackInfo ci){
         //we mark all registered handlers as dirty.
         GlobalEventContainer.getInstance().markDirty();
-        ToolTagHelper.INSTANCE.refresh();
     }
 
 }
