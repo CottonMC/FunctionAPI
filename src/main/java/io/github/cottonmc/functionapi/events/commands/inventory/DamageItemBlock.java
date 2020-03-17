@@ -2,10 +2,10 @@ package io.github.cottonmc.functionapi.events.commands.inventory;
 
 import com.mojang.brigadier.context.CommandContext;
 import io.github.cottonmc.functionapi.api.commands.CommandWithArgument;
-import io.github.cottonmc.functionapi.api.content.enums.Direction;
+import io.github.cottonmc.functionapi.api.content.block.enums.Direction;
 import net.minecraft.server.command.ServerCommandSource;
 
-public class DamageItemBlock implements CommandWithArgument<ServerCommandSource, io.github.cottonmc.functionapi.api.content.enums.Direction> {
+public class DamageItemBlock implements CommandWithArgument<ServerCommandSource, Direction> {
 
     public static final CommandWithArgument INSTANCE = new DamageItemBlock();
 

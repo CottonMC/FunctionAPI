@@ -3,7 +3,7 @@
   "id": "functionapi",
   "version": "${version}",
   "name": "Function API",
-  "description": "Allows function files to hook into the game via different events.",
+  "description": "Allows function files to hook into the game via different events. Server side only version!",
   "authors": [
     "Frontrider"
   ],

@@ -4,7 +4,6 @@ import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.api.script.CommandRunner;
 import io.github.cottonmc.functionapi.script.FunctionManager;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
-import io.github.cottonmc.functionapi.util.FunctionAPIIdentifierImpl;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;

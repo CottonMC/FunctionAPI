@@ -1,6 +1,6 @@
 package io.github.cottonmc.functionapi;
 
-import io.github.cottonmc.functionapi.api.content.enums.Direction;
+import io.github.cottonmc.functionapi.api.content.block.enums.Direction;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -18,7 +18,7 @@ public class Util {
                 placementDirection == Direction.NORTH && direction == net.minecraft.util.math.Direction.NORTH;
     }
 
-    public static EquipmentSlot getSlot(io.github.cottonmc.functionapi.api.content.enums.EquipmentSlot equipmentSlot) {
+    public static EquipmentSlot getSlot(io.github.cottonmc.functionapi.api.content.item.enums.EquipmentSlot equipmentSlot) {
         switch (equipmentSlot) {
             case LEGGINGS:
                 return EquipmentSlot.LEGS;
@@ -35,24 +35,24 @@ public class Util {
         }
     }
 
-    public static io.github.cottonmc.functionapi.api.content.enums.EquipmentSlot getSlot(EquipmentSlot equipmentSlot) {
+    public static io.github.cottonmc.functionapi.api.content.item.enums.EquipmentSlot getSlot(EquipmentSlot equipmentSlot) {
         switch (equipmentSlot) {
             case LEGS:
-                return io.github.cottonmc.functionapi.api.content.enums.EquipmentSlot.LEGGINGS;
+                return io.github.cottonmc.functionapi.api.content.item.enums.EquipmentSlot.LEGGINGS;
             case FEET:
-                return io.github.cottonmc.functionapi.api.content.enums.EquipmentSlot.FOOT;
+                return io.github.cottonmc.functionapi.api.content.item.enums.EquipmentSlot.FOOT;
             case HEAD:
-                return io.github.cottonmc.functionapi.api.content.enums.EquipmentSlot.HELMET;
+                return io.github.cottonmc.functionapi.api.content.item.enums.EquipmentSlot.HELMET;
             case OFFHAND:
-                return io.github.cottonmc.functionapi.api.content.enums.EquipmentSlot.OFF_HAND;
+                return io.github.cottonmc.functionapi.api.content.item.enums.EquipmentSlot.OFF_HAND;
             case MAINHAND:
-                return io.github.cottonmc.functionapi.api.content.enums.EquipmentSlot.MAIN_HAND;
+                return io.github.cottonmc.functionapi.api.content.item.enums.EquipmentSlot.MAIN_HAND;
             default:
-                return io.github.cottonmc.functionapi.api.content.enums.EquipmentSlot.CHESTPLATE;
+                return io.github.cottonmc.functionapi.api.content.item.enums.EquipmentSlot.CHESTPLATE;
         }
     }
 
-    public static SoundEvent getSoundEvent(io.github.cottonmc.functionapi.api.content.enums.EquipSoundEvent equipSoundEvent) {
+    public static SoundEvent getSoundEvent(io.github.cottonmc.functionapi.api.content.item.enums.EquipSoundEvent equipSoundEvent) {
         switch (equipSoundEvent) {
             case GOLD:
                 return SoundEvents.ITEM_ARMOR_EQUIP_GOLD;

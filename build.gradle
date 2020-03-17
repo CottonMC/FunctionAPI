@@ -43,7 +43,7 @@ dependencies {
     compile("io.github.cottonmc:functionapi-scripting:1.0")
     include("io.github.cottonmc:functionapi-scripting:1.0")
 
-    include("io.github.cottonmc:functionapi-api:1.0")
+    include("io.github.cottonmc:functionapi-api:1.4-SNAPSHOT")
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
