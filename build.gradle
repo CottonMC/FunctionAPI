@@ -9,7 +9,6 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-archivesBaseName = "function-api"
 version = project.mod_version
 group = project.maven_group
 
@@ -269,3 +268,19 @@ If an event is blocking, then it will pause the game until the execution is done
 }
 
 build.dependsOn generateEventReference
+
+task buildServerOnly(type:Zip){
+    
+    
+    
+    dependsOn remapJar
+
+    from(zipTree(remapJar.outputs.allOutputFiles[0])){
+        filter{
+            it == "fabric.mod.json"
+        }
+    }
+    from(file(project.projectDir.absolutePath+"/src/main/server-only/"))
+    baseName = "function-api-server"
+    extension="jar"
+}

@@ -47,6 +47,7 @@ If an event is blocking, then it will pause the game until the execution is done
 | \<namespace\>:item/\<name\>/before/use_on_entity_offhand||The source entity, running it it's position|Yes, can be cancelled!|
 | \<namespace\>:item/\<name\>/use_on_entity||The source entity, running it it's position|No|
 | \<namespace\>:item/\<name\>/use_on_entity_offhand||The source entity, running it it's position|No|
+| \<namespace\>:(ScriptedObject) entity/\<name\>/spawn||The source entity, running it it's position|No|
 | \<namespace\>:entity/\<name\>/tick||The source entity, running it it's position|No|
 | function_api:entity/\<name\>/tick|Called when any entity calls \<namespace\>:entity/\<name\>/tick|The source entity, running it it's position|No|
 | \<namespace\>:entity/\<name\>/swim_start||The source entity, running it it's position|No|

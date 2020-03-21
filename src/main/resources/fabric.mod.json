@@ -15,14 +15,13 @@
   "license": "CC0-1.0",
   "icon": "assets/modid/icon.png",
 
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "main":[ "io.github.cottonmc.functionapi.FunctionAPI"]
   },
   "mixins": [
     {
-      "config": "mixins.function_api.json",
-      "environment": "server"
+      "config": "mixins.function_api.json"
     }
   ],
   "depends": {
