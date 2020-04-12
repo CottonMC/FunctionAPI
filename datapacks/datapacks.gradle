@@ -1,0 +1,13 @@
+
+for(File file : new File("./datapacks/").listFiles()){
+    if(file.isDirectory()){
+        def name = file.name
+        
+       def zipTask =  task "$name"(type:Zip){
+            from file
+           archiveName = name+"-function-api.zip"
+           
+        }
+        build.dependsOn zipTask
+    }
+}

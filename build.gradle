@@ -1,6 +1,6 @@
 import java.util.regex.Pattern
 
-plugins {
+plugins{
     id 'fabric-loom' version '0.2.6-SNAPSHOT'
     id 'maven-publish'
     id "com.jfrog.artifactory" version "4.9.0"
@@ -14,49 +14,52 @@ group = project.maven_group
 
 allprojects{
 
-    repositories {
+    repositories{
         mavenCentral()
         mavenLocal()
-        maven { url 'http://server.bbkr.space:8081/artifactory/libs-release' }
-        maven {
+        maven{ url 'http://server.bbkr.space:8081/artifactory/libs-release' }
+        maven{ url 'http://server.bbkr.space:8081/artifactory/libs-snapshot' }
+        maven{
             url "https://libraries.minecraft.net"
         }
     }
 
-    if (rootProject.file('private.gradle').exists()) { //Publishing details
-        apply from: rootProject.rootDir.absolutePath+'/private.gradle'
+    if(rootProject.file('private.gradle').exists()){ //Publishing details
+        apply from: rootProject.rootDir.absolutePath + '/private.gradle'
     }
-    apply plugin:"idea"
+    apply plugin: "idea"
 }
 
-minecraft {
+minecraft{
 }
 
-dependencies {
+dependencies{
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}"
     modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:$fabric_version"
-    
-    compile("io.github.cottonmc:functionapi-scripting:1.0")
-    include("io.github.cottonmc:functionapi-scripting:1.0")
+    modImplementation group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.7'
 
-    include("io.github.cottonmc:functionapi-api:1.4-SNAPSHOT")
+
+    compile("io.github.cottonmc:functionapi-scripting:1.1")
+    include("io.github.cottonmc:functionapi-scripting:1.1")
+
+    include("io.github.cottonmc:functionapi-api:1.4")
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
 }
 
-processResources {
+processResources{
     inputs.property "version", project.version
 
-    from(sourceSets.main.resources.srcDirs) {
+    from(sourceSets.main.resources.srcDirs){
         include "fabric.mod.json"
         expand "version": project.version
     }
 
-    from(sourceSets.main.resources.srcDirs) {
+    from(sourceSets.main.resources.srcDirs){
         exclude "fabric.mod.json"
     }
 }
@@ -64,36 +67,36 @@ processResources {
 // ensure that the encoding is set to UTF-8, no matter what the system default is
 // this fixes some edge cases with special characters not displaying correctly
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile){
     options.encoding = "UTF-8"
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 // if it is present.
 // If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
+task sourcesJar(type: Jar, dependsOn: classes){
     classifier = "sources"
     from sourceSets.main.allSource
 }
 
-jar {
+jar{
     from "LICENSE"
 }
 
 // configure the maven publication
-publishing {
-    publications {
-        maven(MavenPublication) {
+publishing{
+    publications{
+        maven(MavenPublication){
             from components.java
-            
 
-            pom.withXml {
+
+            pom.withXml{
                 def pomFile = asNode()
                 def depsNode = pomFile.get("dependencies")
                 pomFile.remove(depsNode)
 
                 def newDeps = pomFile.appendNode("dependencies")
-                configurations.modCompile.getResolvedConfiguration().getFirstLevelModuleDependencies().each {
+                configurations.modCompile.getResolvedConfiguration().getFirstLevelModuleDependencies().each{
                     def artifactNode = newDeps.appendNode("dependency")
                     artifactNode.appendNode('groupId', it.moduleGroup)
                     artifactNode.appendNode('artifactId', it.moduleName)
@@ -101,12 +104,12 @@ publishing {
                 }
             }
             artifacts = [
-                    artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}" + ".jar") {
+                    artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}" + ".jar"){
                         //release jar - file location not provided anywhere in loom
                         classifier null
                         builtBy remapJar
                     },
-                    artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}-dev" + ".jar") {
+                    artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}-dev" + ".jar"){
                         //release jar - file location not provided anywhere in loom
                         classifier "dev"
                         builtBy remapJar
@@ -120,47 +123,48 @@ publishing {
      * and then just run "./gradlew publish" to save the artifacts to the specified directory, in a way that they can be
      * served by apache or your favorite httpd and behave like a maven repo. Complete with verification hashes.
      */
-    repositories {
-        if (rootProject.ext.has("localMavenUrl")) {
-            maven {
+    repositories{
+        if(rootProject.ext.has("localMavenUrl")){
+            maven{
                 url = rootProject.ext.localMavenUrl
             }
         }
     }
 }
 
-artifactory {
-    if (project.hasProperty("artifactoryUsername")) {
+artifactory{
+    if(project.hasProperty("artifactoryUsername")){
         contextUrl = 'http://server.bbkr.space:8081/artifactory/'
-        publish {
-            repository {
-                if (version.contains("SNAPSHOT")) {
+        publish{
+            repository{
+                if(version.contains("SNAPSHOT")){
                     repoKey = "libs-snapshot"
-                } else {
+                }else{
                     repoKey = "libs-release"
                 }
                 username = artifactoryUsername
                 password = artifactoryPassword
             }
-            defaults {
+            defaults{
                 publications('maven')
 
                 publishArtifacts = true
                 publishPom = true
             }
         }
-    } else {
+    }else{
         println "Cannot configure artifactory; please define ext.artifactoryUsername and ext.artifactoryPassword before running artifactoryPublish"
     }
 }
 
-task generateEventReference() {
-    group="documentation"
-    doLast {
-        FileTree tree = fileTree('src')
-        def doc = new File("docs/eventReference.md")
+def eventReference = file(project.buildDir.absolutePath + "/events.csv")
 
-        def eventReference = file(project.buildDir.absolutePath+"/events.csv")
+task generateEventReference(){
+    group = "documentation"
+    doLast{
+        FileTree tree = fileTree('src')
+        def doc = file("docs/eventReference.md")
+
 
         eventReference.write("")
 
@@ -180,27 +184,32 @@ If an event is blocking, then it will pause the game until the execution is done
 |---|---|---|---|
 """)
 
-        tree.each { file ->
-            String contents = file.readLines().join("\n")
-            Pattern pattern = Pattern.compile("GlobalEventContainer\\.getInstance\\(\\)\\.execute(Event|EventBlocking)\\((.*?), \"(.*?)\",([^;\n]+|[^{])")
+        tree.each{ file ->
+            def contents = file.readLines().join("\n")
+            def pattern = Pattern.compile("GlobalEventContainer\\.getInstance\\(\\)\\.execute(Event|EventBlocking)\\((.*?), \"(.*?)\",([^;\n]+|[^{])")
             def found = contents.findAll(pattern)
-            if (!found.isEmpty()) {
+            if(!found.isEmpty()){
                 println(file.name)
-                found.each {
+                found.each{
 
                     def params = it.replaceAll("^GlobalEventContainer\\.getInstance\\(\\)\\.executeEvent(|Blocking)\\(", "")
                     params = params.split(",", 3)
-                    switch (params[0]) {
+                    switch(params[0]){
                         case "(ScriptedObject) blockState.getBlock()":
+                        case "(ScriptedObject)blockState.getBlock()":
                         case "(ScriptedObject) this.getBlock()":
+                        case "(ScriptedObject)this.getBlock()":
                         case "(ScriptedObject) block":
+                        case "(ScriptedObject)block":
                             params[0] = "block"
                             break;
+                        case "(ScriptedObject) entity":
+                        case "(ScriptedObject)entity":
                         case "Target.ENTITY_TARGET":
                             params[0] = "entity"
                             break;
                         default:
-                            if (file.name == "BlockMixin.java")
+                            if(file.name == "BlockMixin.java")
                                 params[0] = "block"
                             break;
                     }
@@ -214,52 +223,55 @@ If an event is blocking, then it will pause the game until the execution is done
                     //.reverse()
                             .toList()
 
-                    components.removeAt(0)
-                    components.removeAt(0)
+                    if(!components.isEmpty())
+                        components.removeAt(0)
 
-                    if (components.size() == 1) {
+                    if(components.size() == 1){
                         components = "The source entity, running it it's position"
                     }
-                    if (components.size() == 2) {
+                    if(components.size() == 2){
                         components = "The source block, running it it's position"
                     }
-                    if (components.size() == 3) {
+                    if(components.size() == 3){
+                        components = "The source block, running it it's position, also the entity that is the source of this interaction"
+                    }
+                    if(components.size() == 4){
                         components = "The source block, running it it's position, also the entity that is the source of this interaction"
                     }
 
                     def isBlocking = "No"
 
-                    if (params[1].contains("before/")) {
+                    if(params[1].contains("before/")){
                         isBlocking = "Yes, can be cancelled!"
                     }
-                    if (params[1].contains("after/")) {
+                    if(params[1].contains("after/")){
                         isBlocking = "Yes"
                     }
 
                     println(components)
                     doc.append("| \\<namespace\\>:${params[0]}/\\<name\\>/${params[1]}||${components}|$isBlocking|\n")
 
-                    if (params[0] == "entity") {
+                    if(params[0] == "entity"){
                         doc.append("| function_api:${params[0]}/\\<name\\>/${params[1]}|Called when any entity calls \\<namespace\\>:${params[0]}/\\<name\\>/${params[1]}|${components}|$isBlocking|\n")
-                        eventReference.append("${params[0]},${params[1]}")
                     }
                     println(params)
-
+                    eventReference.append("${params[0]};${params[1]};${components};$isBlocking\n")
                 }
             }
 
-            Pattern functionPattern = Pattern.compile("#(.*?)\nevent run (.*?)\n")
+            def functionPattern = Pattern.compile("#(.*?)\nevent run (.*?)\n")
             def foundInFunction = contents.findAll(functionPattern)
             if(!foundInFunction.isEmpty()){
                 println(file.name)
                 foundInFunction.each{
                     println(it)
                     def lines = it.split("\n")
-                    
-                    lines[0] = lines[0].replaceAll("#","")
-                    lines[1] = lines[1].replaceAll("event run ","")
-                        
+
+                    lines[0] = lines[0].replaceAll("#", "")
+                    lines[1] = lines[1].replaceAll("event run ", "")
+
                     doc.append("| ${lines[1]}|${lines[0]}| The server | No |\n")
+                    eventReference.append("${lines[1]};${lines[0]};The server; No\n")
                 }
             }
         }
@@ -267,20 +279,13 @@ If an event is blocking, then it will pause the game until the execution is done
     }
 }
 
-build.dependsOn generateEventReference
+jar{
 
-task buildServerOnly(type:Zip){
-    
-    
-    
-    dependsOn remapJar
-
-    from(zipTree(remapJar.outputs.allOutputFiles[0])){
-        filter{
-            it == "fabric.mod.json"
+    dependsOn generateEventReference
+    if(eventReference.exists())
+        from(eventReference){
+            into("")
         }
-    }
-    from(file(project.projectDir.absolutePath+"/src/main/server-only/"))
-    baseName = "function-api-server"
-    extension="jar"
 }
+
+apply from:"./datapacks/datapacks.gradle"

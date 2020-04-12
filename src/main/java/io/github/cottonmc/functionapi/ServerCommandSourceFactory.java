@@ -38,6 +38,11 @@ public class ServerCommandSourceFactory {
         String translate = Language.getInstance().translate(block.getTranslationKey());
         return create(serverWorld.getServer(), new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate));
     }
+    public ServerCommandSource create(ServerWorld serverWorld, BlockPos blockPos) {
+        Block block = serverWorld.getBlockState(blockPos).getBlock();
+        String translate = Language.getInstance().translate(block.getTranslationKey());
+        return create(serverWorld.getServer(), new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate));
+    }
 
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Entity entity) {
         return create(minecraftServer, entity.getPos(), entity.getRotationClient(), serverWorld, 2, entity.getName().getString(), entity.getName(),entity);

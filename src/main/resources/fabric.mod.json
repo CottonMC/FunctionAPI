@@ -28,7 +28,8 @@
     "fabricloader": ">=0.4.0",
     "fabric": "*",
     "functionapi_common": "*",
-    "functionapi_common_scripting": "*"
+    "functionapi_common_scripting": "*",
+    "cotton-config": "*"
   },
   "suggests": {
     "flamingo": "*"

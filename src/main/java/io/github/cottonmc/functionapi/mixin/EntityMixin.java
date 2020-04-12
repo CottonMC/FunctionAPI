@@ -36,10 +36,11 @@ import java.util.List;
  */
 @Mixin(value = Entity.class, priority = 0)
 @Implements({
-        @Interface(iface = ScriptedObject.class, prefix = "api_scripted$"),
-        @Interface(iface = Marked.class, prefix = "api_marker$")
+@Interface(iface = ScriptedObject.class, prefix = "api_scripted$"),
+@Interface(iface = Marked.class, prefix = "api_marker$")
 })
-public abstract class EntityMixin {
+public abstract class EntityMixin{
+    private CompoundTag oldTag = null;
 
     @Shadow
     public abstract MinecraftServer getServer();
@@ -52,49 +53,54 @@ public abstract class EntityMixin {
 
     private Identifier thisId = null;
 
-
     @Inject(
-            at = @At("HEAD"),
-            method = "baseTick"
+    at = @At("HEAD"),
+    method = "baseTick"
     )
-    private void tick(CallbackInfo ci) {
-        if (world instanceof ServerWorld) {
-            ScriptedObject entity = (ScriptedObject) this;
-            GlobalEventContainer.getInstance().executeEvent(entity, "tick", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
+    private void tick(CallbackInfo ci){
+        if(world.isClient())
+            return;
+
+        if(world instanceof ServerWorld){
+            ScriptedObject entity = (ScriptedObject)this;
+            GlobalEventContainer.getInstance().executeEvent(entity, "tick", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)world, (Entity)(Object)this));
         }
     }
 
     @Inject(
-            at = @At("HEAD"),
-            method = "onSwimmingStart"
+    at = @At("HEAD"),
+    method = "onSwimmingStart"
     )
-    private void swimStart(CallbackInfo ci) {
-        if (world instanceof ServerWorld) {
-            ScriptedObject entity = (ScriptedObject) this;
-            GlobalEventContainer.getInstance().executeEvent(entity, "swim_start", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
+    private void swimStart(CallbackInfo ci){
+
+        if(world instanceof ServerWorld){
+            ScriptedObject entity = (ScriptedObject)this;
+            GlobalEventContainer.getInstance().executeEvent(entity, "swim_start", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)world, (Entity)(Object)this));
         }
     }
 
     @Inject(at = @At("HEAD"), method = "damage",
-            cancellable = true)
-    private void damagedBEFORE(DamageSource damageSource_1, float float_1, CallbackInfoReturnable<Boolean> cir) {
-        ScriptedObject entity = (ScriptedObject) this;
+    cancellable = true)
+    private void damagedBEFORE(DamageSource damageSource_1, float float_1, CallbackInfoReturnable<Boolean> cir){
 
-        if (world instanceof ServerWorld) {
-            ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking(entity, "before/damage", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
+        ScriptedObject entity = (ScriptedObject)this;
 
-            if (((CommandSourceExtension) serverCommandSource).isCancelled()) {
+        if(world instanceof ServerWorld){
+            ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking(entity, "before/damage", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)world, (Entity)(Object)this));
+
+            if(((CommandSourceExtension)serverCommandSource).isCancelled()){
                 cir.cancel();
             }
+            GlobalEventContainer.getInstance().executeEvent(entity, "damage", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)world, (Entity)(Object)this));
         }
-        GlobalEventContainer.getInstance().executeEvent(entity, "damage", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
     }
 
     @Inject(at = @At("HEAD"), method = "onStruckByLightning")
-    private void onStruckByLightning(LightningEntity lightningEntity_1, CallbackInfo ci) {
-        if (world instanceof ServerWorld) {
-            ScriptedObject entity = (ScriptedObject) this;
-            GlobalEventContainer.getInstance().executeEvent(entity, "struck_by_lightning", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
+    private void onStruckByLightning(LightningEntity lightningEntity_1, CallbackInfo ci){
+
+        if(world instanceof ServerWorld){
+            ScriptedObject entity = (ScriptedObject)this;
+            GlobalEventContainer.getInstance().executeEvent(entity, "struck_by_lightning", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)world, (Entity)(Object)this));
         }
     }
 
@@ -107,28 +113,33 @@ public abstract class EntityMixin {
     private List<Identifier> markers = new LinkedList<>();
 
     @Inject(at = @At("RETURN"), method = "toTag")
-    private void toTag(CompoundTag compoundTag, CallbackInfoReturnable<CompoundTag> cir) {
+    private void toTag(CompoundTag compoundTag, CallbackInfoReturnable<CompoundTag> cir){
         ListTag markerNBT = new ListTag();
 
-        for (Identifier marker : markers) {
+        for(Identifier marker : markers){
             markerNBT.add(StringTag.of(marker.toString()));
         }
         compoundTag.put("markers", markerNBT);
+        if(oldTag == null){
+            oldTag = compoundTag;
+            return;
+        }
+
     }
 
     @Inject(at = @At("HEAD"), method = "fromTag")
-    private void fromTag(CompoundTag compoundTag, CallbackInfo cir) {
-        for (Tag tag : compoundTag.getList("markers", 8)) {
+    private void fromTag(CompoundTag compoundTag, CallbackInfo cir){
+        for(Tag tag : compoundTag.getList("markers", 8)){
             String id = tag.asString();
             markers.add(new Identifier(id));
         }
     }
 
-    public boolean api_marker$hasMarker(Identifier identifier) {
+    public boolean api_marker$hasMarker(Identifier identifier){
         return markers.contains(identifier);
     }
 
-    public List<Identifier> api_marker$getMarkers() {
+    public List<Identifier> api_marker$getMarkers(){
         return markers;
     }
 
@@ -137,17 +148,17 @@ public abstract class EntityMixin {
      * */
 
 
-    public FunctionAPIIdentifier api_scripted$getEventID() {
-        if (thisId == null) {
-            if ((Entity) (Object) this instanceof PlayerEntity) {
+    public FunctionAPIIdentifier api_scripted$getEventID(){
+        if(thisId == null){
+            if((Entity)(Object)this instanceof PlayerEntity){
                 thisId = new Identifier("player");
-            } else
+            }else
                 thisId = Registry.ENTITY_TYPE.getId(this.getType());
         }
-        return (FunctionAPIIdentifier) thisId;
+        return (FunctionAPIIdentifier)thisId;
     }
 
-    public String api_scripted$getEventType() {
+    public String api_scripted$getEventType(){
         return "entity";
     }
 }

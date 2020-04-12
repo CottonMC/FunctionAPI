@@ -1,5 +1,6 @@
 package io.github.cottonmc.functionapi.events;
 
+import io.github.cottonmc.functionapi.*;
 import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import io.github.cottonmc.functionapi.script.FunctionManager;
@@ -21,13 +22,18 @@ public class GlobalEventContainer extends GlobalFunctionManager<ServerCommandSou
 
     @Override
     protected FunctionManager<ServerCommandSource, MinecraftServer> getNewManager(io.github.cottonmc.functionapi.api.FunctionAPIIdentifier name) {
+        for(String blacklistedEvent : FunctionAPI.config.blacklistedEvents){
+            if(name.toString().equals(blacklistedEvent))
+                return new DisabledEventManager(name);
+        }
         return new EventManager(name);
     }
 
 
     @Override
     protected FunctionManager<ServerCommandSource, MinecraftServer> getNewManager(ScriptedObject target, String name) {
-        return new EventManager(target,name);
+        FunctionAPIIdentifier id = EventManager.createID(target, name);
+        return getManager(id);
     }
 
     public static GlobalEventContainer getInstance() {

@@ -31,7 +31,12 @@ public class EventManager extends FunctionManager<ServerCommandSource,MinecraftS
 
     @Override
     protected CommandRunner<ServerCommandSource,MinecraftServer> getCommandRunner(FunctionAPIIdentifier identifier) {
+        if(identifier instanceof  Identifier)
         return new ServerCommandRunner((Identifier) identifier);
+        else{
+            return new ServerCommandRunner(new Identifier(identifier.getNamespace(),identifier.getPath()));
+
+        }
     }
 
     public static FunctionAPIIdentifier createID(ScriptedObject target, String eventName) {
