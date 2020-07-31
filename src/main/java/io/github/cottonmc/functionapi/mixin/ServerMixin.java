@@ -6,7 +6,10 @@ import net.minecraft.world.level.LevelProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.*;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * resets every scriptable object, once we're done reloading.
@@ -17,8 +20,8 @@ public abstract class ServerMixin {
     /**
      * hooks into the end of the method that runs when datapacks are reloaded.
      * */
-    @Inject(at=@At("TAIL"),method = "reloadDataPacks")
-    private void reload(LevelProperties levelProperties_1, CallbackInfo ci){
+    @Inject(at=@At("TAIL"),method = "reloadResources")
+    private void reload(Collection<String> collection, CallbackInfoReturnable<CompletableFuture<Void>> cir){
         //we mark all registered handlers as dirty.
         GlobalEventContainer.getInstance().markDirty();
     }

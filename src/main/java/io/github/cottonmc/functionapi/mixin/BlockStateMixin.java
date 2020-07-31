@@ -4,10 +4,12 @@ import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
+import net.minecraft.block.AbstractBlock.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.*;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
@@ -23,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Random;
 
-@Mixin(value={net.minecraft.block.BlockState.class},priority = 0)
+@Mixin(value={AbstractBlockState.class},priority = 0)
 public abstract class BlockStateMixin {
 
     @Shadow
@@ -87,9 +89,9 @@ public abstract class BlockStateMixin {
     }
 
     @Inject(at = @At("TAIL"), method = "onProjectileHit")
-    private void onProjectileHit(World world_1, BlockState blockState_1, BlockHitResult blockHitResult_1, Entity entity_1, CallbackInfo ci) {
-        if (!world_1.isClient())
-            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "projectile_hit", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, this.getBlock(), blockHitResult_1.getBlockPos(), entity_1));
+    private void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, ProjectileEntity projectileEntity, CallbackInfo ci) {
+        if (!world.isClient())
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "projectile_hit", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, this.getBlock(), blockHitResult.getBlockPos(), projectileEntity));
     }
 
     @Inject(at=@At("TAIL"),method = "scheduledTick")

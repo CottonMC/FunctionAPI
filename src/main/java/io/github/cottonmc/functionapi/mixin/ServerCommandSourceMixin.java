@@ -13,8 +13,14 @@ public abstract class ServerCommandSourceMixin implements CommandSourceExtension
         return cancelled;
     }
 
+
     @Override
     public void cancel() {
         cancelled = true;
+    }
+
+    @Override
+    public void setCancelled(boolean b){
+        cancelled = b;
     }
 }

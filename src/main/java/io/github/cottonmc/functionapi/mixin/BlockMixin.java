@@ -15,8 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -66,7 +65,7 @@ public abstract class BlockMixin implements ScriptedObject{
             method = "onBroken",
             cancellable = true
     )
-    private void brokenBefore(IWorld world_1, BlockPos blockPos_1, BlockState blockState_1, CallbackInfo ci) {
+    private void brokenBefore(WorldAccess world_1, BlockPos blockPos_1, BlockState blockState_1, CallbackInfo ci) {
         if (world_1 instanceof ServerWorld) {
             ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking(this, "before/broken", ServerCommandSourceFactory.INSTANCE.create((ServerWorld) world_1, (Block) (Object) this, blockPos_1));
 
@@ -80,7 +79,7 @@ public abstract class BlockMixin implements ScriptedObject{
             at = @At("TAIL"),
             method = "onBroken"
     )
-    private void broken(IWorld world_1, BlockPos blockPos_1, BlockState blockState_1, CallbackInfo ci) {
+    private void broken(WorldAccess world_1, BlockPos blockPos_1, BlockState blockState_1, CallbackInfo ci) {
         if (world_1 instanceof ServerWorld) {
             GlobalEventContainer.getInstance().executeEvent(this, "broken", ServerCommandSourceFactory.INSTANCE.create(((ServerWorld) world_1).getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1));
         }

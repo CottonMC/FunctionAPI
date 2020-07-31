@@ -26,10 +26,10 @@ public class FunctionAPI implements ModInitializer {
         config = ConfigManager.loadConfig(Config.class);
 
         CommandRegistry.INSTANCE.register(false, EventCommand::register);
-        CommandRegistry.INSTANCE.register(false, dispatcher -> new InventoryCommand().register(dispatcher));
-        CommandRegistry.INSTANCE.register(false, MoveEntityCommand::register);
+        //CommandRegistry.INSTANCE.register(false, dispatcher -> new InventoryCommand().register(dispatcher));
+        //CommandRegistry.INSTANCE.register(false, MoveEntityCommand::register);
         CommandRegistry.INSTANCE.register(false, ScheduleBlockTickCommand::register);
-        CommandRegistry.INSTANCE.register(false,dispatcher -> new ExecuteExtension().register(dispatcher));
-        CommandRegistry.INSTANCE.register(false, commandDispatcher_1 -> new BlockStateCommand().register(commandDispatcher_1));
+        //CommandRegistry.INSTANCE.register(false,dispatcher -> new ExecuteExtension().register(dispatcher));
+        //CommandRegistry.INSTANCE.register(false, commandDispatcher_1 -> new BlockStateCommand().register(commandDispatcher_1));
     }
 }

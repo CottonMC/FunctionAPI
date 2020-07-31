@@ -31,18 +31,17 @@ public class FloatingItemInventory implements Inventory {
     }
 
     @Override
-    public int getInvSize() {
-        //infinite storage!
+    public int size(){
         return entities.size() + 1;
     }
 
     @Override
-    public boolean isInvEmpty() {
+    public boolean isEmpty(){
         return entities.isEmpty();
     }
 
     @Override
-    public ItemStack getInvStack(int i) {
+    public ItemStack getStack(int i){
         if (i > entities.size() - 1) {
             return ItemStack.EMPTY;
         }
@@ -50,7 +49,7 @@ public class FloatingItemInventory implements Inventory {
     }
 
     @Override
-    public ItemStack takeInvStack(int i, int transferred) {
+    public ItemStack removeStack(int i, int j){
         if (i > entities.size()) {
             return ItemStack.EMPTY;
         }
@@ -58,9 +57,9 @@ public class FloatingItemInventory implements Inventory {
         ItemStack stack = entities.get(i).getStack();
 
         ItemStack copy = stack.copy();
-        if (stack.getCount() >= transferred) {
-            stack.setCount(stack.getCount() - transferred);
-            copy.setCount(transferred);
+        if (stack.getCount() >= j) {
+            stack.setCount(stack.getCount() - j);
+            copy.setCount(j);
         } else {
             copy.setCount(stack.getCount());
             entities.get(i).kill();
@@ -70,7 +69,7 @@ public class FloatingItemInventory implements Inventory {
     }
 
     @Override
-    public ItemStack removeInvStack(int i) {
+    public ItemStack removeStack(int i){
         if (i > entities.size()) {
             return ItemStack.EMPTY;
         }
@@ -81,7 +80,7 @@ public class FloatingItemInventory implements Inventory {
     }
 
     @Override
-    public void setInvStack(int i, ItemStack itemStack) {
+    public void setStack(int i, ItemStack itemStack){
         if (i > entities.size()-1) {
             ItemEntity itemEntity = new ItemEntity(world, blockPos.getX()+.5, blockPos.getY()+.5, blockPos.getZ()+.5, itemStack);
             world.spawnEntity(itemEntity);
@@ -100,7 +99,7 @@ public class FloatingItemInventory implements Inventory {
     }
 
     @Override
-    public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+    public boolean canPlayerUse(PlayerEntity playerEntity){
         return false;
     }
 

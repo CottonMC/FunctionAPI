@@ -3,18 +3,20 @@ package io.github.cottonmc.functionapi;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.text.Text;
 
+import java.util.*;
+
 
 public class StandardCommandOutput implements CommandOutput {
 
     public static CommandOutput INSTANCE = new StandardCommandOutput();
 
     @Override
-    public void sendMessage(Text text) {
+    public void sendSystemMessage(Text text, UUID uUID){
         System.out.println(text.asString());
     }
 
     @Override
-    public boolean sendCommandFeedback() {
+    public boolean shouldReceiveFeedback(){
         return false;
     }
 

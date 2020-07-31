@@ -22,7 +22,7 @@ public class MoveEntityCommand {
                                             Vec3d amount = Vec3ArgumentType.getVec3(context, "amount");
 
                                             for (Entity entity : entities) {
-                                                Vec3d distanceFromTarget = new Vec3d(entity.getBlockPos()).subtract(amount);
+                                                Vec3d distanceFromTarget = entity.getPos().subtract(amount);
                                                 entity.addVelocity(distanceFromTarget.getX(),-distanceFromTarget.getY(),distanceFromTarget.getZ());
                                             }
 

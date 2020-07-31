@@ -1,7 +1,7 @@
 import java.util.regex.Pattern
 
 plugins{
-    id 'fabric-loom' version '0.2.6-SNAPSHOT'
+    id 'fabric-loom' version '0.4-SNAPSHOT'
     id 'maven-publish'
     id "com.jfrog.artifactory" version "4.9.0"
 }
@@ -45,7 +45,7 @@ dependencies{
     compile("io.github.cottonmc:functionapi-scripting:1.1")
     include("io.github.cottonmc:functionapi-scripting:1.1")
 
-    include("io.github.cottonmc:functionapi-api:1.4")
+    include("io.github.cottonmc:functionapi-api:1.5-SNAPSHOT")
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.

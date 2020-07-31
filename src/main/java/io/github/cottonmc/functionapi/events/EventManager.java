@@ -8,7 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.*;
 
 import java.util.function.Supplier;
 
@@ -66,7 +66,7 @@ public class EventManager extends FunctionManager<ServerCommandSource,MinecraftS
         commandRunner.fire(commandContext);
     }
 
-    public static EventManager execute(EventManager manager, ScriptedObject thiz, String name, IWorld world_1, Supplier<ServerCommandSource> serverCommandSourceSupplier) {
+    public static EventManager execute(EventManager manager, ScriptedObject thiz, String name, WorldAccess world_1, Supplier<ServerCommandSource> serverCommandSourceSupplier) {
         if (world_1 instanceof ServerWorld) {
             if (manager == null) {
                 manager = new EventManager(thiz, name);
@@ -78,7 +78,7 @@ public class EventManager extends FunctionManager<ServerCommandSource,MinecraftS
         return null;
     }
 
-    public static EventManager executeBlocking(EventManager manager, ScriptedObject thiz, String name, IWorld world_1, Supplier<ServerCommandSource> serverCommandSourceSupplier) {
+    public static EventManager executeBlocking(EventManager manager, ScriptedObject thiz, String name, WorldAccess world_1, Supplier<ServerCommandSource> serverCommandSourceSupplier) {
         if (world_1 instanceof ServerWorld) {
             if (manager == null) {
                 manager = new EventManager(thiz, name);

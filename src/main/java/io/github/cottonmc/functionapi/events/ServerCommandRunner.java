@@ -5,6 +5,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
+import net.minecraft.tag.*;
 import net.minecraft.util.Identifier;
 
 import java.util.Collection;
@@ -40,7 +41,8 @@ public class ServerCommandRunner implements CommandRunner<ServerCommandSource,Mi
     public void reload(MinecraftServer server) {
         if (dirty) {
             CommandFunctionManager commandFunctionManager = server.getCommandFunctionManager();
-            Collection<CommandFunction> functions = commandFunctionManager.getTags().getOrCreate(eventID).values();
+
+            Collection<CommandFunction> functions = commandFunctionManager.method_29462(eventID).values();
             this.functions.addAll(functions);
 
             dirty = false;

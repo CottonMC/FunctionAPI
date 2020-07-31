@@ -1,9 +1,12 @@
 package io.github.cottonmc.functionapi.events.commands.inventory;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.*;
 import io.github.cottonmc.functionapi.api.commands.CommandWithArgument;
+import net.minecraft.command.arguments.*;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.math.Direction;
+import net.minecraft.text.*;
+import net.minecraft.util.math.*;
 
 public class ConsumeItemBlock implements CommandWithArgument<ServerCommandSource,Direction> {
 
@@ -13,6 +16,17 @@ public class ConsumeItemBlock implements CommandWithArgument<ServerCommandSource
 
     @Override
     public int execute(CommandContext<ServerCommandSource> context, Direction direction) {
-        return 1;
+        context.getSource().sendFeedback(new LiteralText("consuming item"),true);
+        try{
+            BlockPos sourceBlock = BlockPosArgumentType.getBlockPos(context, "sourceBlock");
+
+            context.getSource().sendFeedback(new LiteralText(sourceBlock.toString()),true);
+
+        }catch(CommandSyntaxException e){
+            context.getSource().sendError(new LiteralText(e.getRawMessage().getString()));
+            return 1;
+        }
+
+        return 0;
     }
 }

@@ -112,8 +112,8 @@ public class MoveItem implements CommandWithTwoArguments<ServerCommandSource, Di
         do {
             ItemStack moved = ItemStack.EMPTY;
             int movedSlot = 0;
-            for (int i = 0; i < sourceInventory.getInvSize(); i++) {
-                ItemStack invStack = sourceInventory.getInvStack(i);
+            for (int i = 0; i < sourceInventory.size(); i++) {
+                ItemStack invStack = sourceInventory.getStack(i);
                 if (itemPredicate.test(invStack)) {
                     moved = invStack;
                     movedSlot = i;
@@ -127,7 +127,7 @@ public class MoveItem implements CommandWithTwoArguments<ServerCommandSource, Di
             }
 
             if (sourceInventory instanceof SidedInventory) {
-                if (!((SidedInventory) sourceInventory).canExtractInvStack(movedSlot, moved, Util.getDirection(source))) {
+                if (!((SidedInventory) sourceInventory).canExtract(movedSlot, moved, Util.getDirection(source))) {
                     context.getSource().sendError(new TranslatableText("hu.frontrider.functionapi.command.source.cant"));
                     return 0;
                 } else {

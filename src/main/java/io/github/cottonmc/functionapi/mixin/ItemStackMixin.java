@@ -4,7 +4,6 @@ import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
-import io.github.cottonmc.functionapi.marker.Marked;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -34,9 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Mixin(value = ItemStack.class, priority = 0)
-@Implements({
-        @Interface(iface = Marked.class, prefix = "api_marker$")
-})
 public abstract class ItemStackMixin {
 
     @Shadow
@@ -144,34 +140,5 @@ public abstract class ItemStackMixin {
             }
 
         }
-    }
-
-    private List<Identifier> markers = new LinkedList<>();
-
-    @Inject(at = @At("RETURN"), method = "toTag")
-    private void toTag(CompoundTag compoundTag, CallbackInfoReturnable<CompoundTag> cir) {
-        ListTag markerNBT = new ListTag();
-
-        for (Identifier marker : markers) {
-            markerNBT.add(StringTag.of(marker.toString()));
-        }
-        compoundTag.put("markers", markerNBT);
-    }
-
-    @Inject(at = @At("RETURN"), method = "fromTag",cancellable = true)
-    private static void fromTag(CompoundTag compoundTag, CallbackInfoReturnable<ItemStack> cir) {
-        ItemStack stack = cir.getReturnValue();
-        for (Tag tag : compoundTag.getList("markers", 8)) {
-            String id = tag.asString();
-            ((Marked)(Object)stack).getMarkers().add(new Identifier(id));
-        }
-    }
-
-    public boolean api_marker$hasMarker(Identifier identifier) {
-        return markers.contains(identifier);
-    }
-
-    public List<Identifier> api_marker$getMarkers() {
-        return markers;
     }
 }

@@ -10,6 +10,7 @@ import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.command.*;
 import net.minecraft.server.world.*;
 import net.minecraft.util.math.*;
+import net.minecraft.util.registry.*;
 import net.minecraft.world.*;
 import net.minecraft.world.explosion.*;
 import org.spongepowered.asm.mixin.*;
@@ -56,7 +57,7 @@ public abstract class ExplosionMixin{
 
                 for(BlockPos affectedBlock : getAffectedBlocks()){
                     world.getServer().execute(()->{
-                        world.getServer().getPlayerManager().sendToAround(null, affectedBlock.getX(), affectedBlock.getY(), affectedBlock.getZ(), 64.0D, world.dimension.getType(), new BlockUpdateS2CPacket(world,affectedBlock));
+                        world.getServer().getPlayerManager().sendToAround(null, affectedBlock.getX(), affectedBlock.getY(), affectedBlock.getZ(), 64.0D, world.getRegistryKey(), new BlockUpdateS2CPacket(world,affectedBlock));
                     });
                 }
             }

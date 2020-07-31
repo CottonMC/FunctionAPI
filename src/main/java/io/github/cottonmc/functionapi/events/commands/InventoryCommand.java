@@ -22,7 +22,7 @@ import net.minecraft.server.command.ServerCommandSource;
  *  move without a filter takes the first available item.
  *  if there is no block with an inventory, then we'll use all of the floating items in that position.
  * */
-public class InventoryCommand extends InventoryCommandTemplate<ServerCommandSource, PosArgument, EntitySelector, ItemPredicateArgumentType.ItemPredicateArgument> {
+public class InventoryCommand{}/* extends InventoryCommandTemplate<ServerCommandSource, PosArgument, EntitySelector, ItemPredicateArgumentType.ItemPredicateArgument> {
 
     public InventoryCommand() {
         super(MoveItem.FILTERED, MoveItem.UNFILTERED, ConsumeItemBlock.INSTANCE, DamageItemBlock.INSTANCE,DamageItemEntity.INSTANCE, ConsumeItemEntity.INSTANCE);
@@ -45,3 +45,4 @@ public class InventoryCommand extends InventoryCommandTemplate<ServerCommandSour
 
 
 }
+*/

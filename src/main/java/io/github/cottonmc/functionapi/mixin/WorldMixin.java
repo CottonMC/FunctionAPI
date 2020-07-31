@@ -1,35 +1,17 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
-import io.github.cottonmc.functionapi.api.commands.*;
-import io.github.cottonmc.functionapi.api.script.ScriptedObject;
-import io.github.cottonmc.functionapi.events.GlobalEventContainer;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.boss.*;
-import net.minecraft.entity.damage.*;
-import net.minecraft.entity.projectile.*;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.*;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkManager;
-import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.explosion.*;
-import net.minecraft.world.explosion.Explosion.*;
-import net.minecraft.world.level.LevelProperties;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.function.BiFunction;
+import io.github.cottonmc.functionapi.*;
+import io.github.cottonmc.functionapi.api.script.*;
+import io.github.cottonmc.functionapi.events.*;
+import net.minecraft.block.*;
+import net.minecraft.entity.*;
+import net.minecraft.server.*;
+import net.minecraft.server.world.*;
+import net.minecraft.util.math.*;
+import net.minecraft.world.*;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.*;
 
 @Mixin(World.class)
 public abstract class WorldMixin{
@@ -48,7 +30,7 @@ public abstract class WorldMixin{
     at = @At("HEAD"),
     method = "breakBlock"
     )
-    private void broken(BlockPos blockPos, boolean bl, Entity entity, CallbackInfoReturnable<Boolean> cir){
+    private void broken(BlockPos blockPos, boolean bl, Entity entity, int i, CallbackInfoReturnable<Boolean> cir){
         if(!this.isClient){
             Block block = getBlockState(blockPos).getBlock();
             ServerWorld world = (ServerWorld)(Object)this;

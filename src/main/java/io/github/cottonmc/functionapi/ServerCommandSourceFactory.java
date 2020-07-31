@@ -30,18 +30,18 @@ public class ServerCommandSourceFactory {
     }
 
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Block block, BlockPos blockPos) {
-        String translate = Language.getInstance().translate(block.getTranslationKey());
-        return create(minecraftServer, new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate));
+        String translate = Language.getInstance().get(block.getTranslationKey());
+        return create(minecraftServer, new Vec3d(blockPos.getX(),blockPos.getY(),blockPos.getZ()), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate));
     }
 
     public ServerCommandSource create(ServerWorld serverWorld, Block block, BlockPos blockPos) {
-        String translate = Language.getInstance().translate(block.getTranslationKey());
-        return create(serverWorld.getServer(), new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate));
+        String translate = Language.getInstance().get(block.getTranslationKey());
+        return create(serverWorld.getServer(), new Vec3d(blockPos.getX(),blockPos.getY(),blockPos.getZ()), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate));
     }
     public ServerCommandSource create(ServerWorld serverWorld, BlockPos blockPos) {
         Block block = serverWorld.getBlockState(blockPos).getBlock();
-        String translate = Language.getInstance().translate(block.getTranslationKey());
-        return create(serverWorld.getServer(), new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate));
+        String translate = Language.getInstance().get(block.getTranslationKey());
+        return create(serverWorld.getServer(), new Vec3d(blockPos.getX(),blockPos.getY(),blockPos.getZ()), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate));
     }
 
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Entity entity) {
@@ -52,8 +52,8 @@ public class ServerCommandSourceFactory {
         return create(serverWorld.getServer(), entity.getPos(), entity.getRotationClient(), serverWorld, 2, entity.getName().getString(), entity.getName(),entity);
     }
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Block block, BlockPos blockPos,Entity entity) {
-        String translate = Language.getInstance().translate(block.getTranslationKey());
-        return create(minecraftServer, new Vec3d(blockPos), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate),entity);
+        String translate = Language.getInstance().get(block.getTranslationKey());
+        return create(minecraftServer, new Vec3d(blockPos.getX(),blockPos.getY(),blockPos.getZ()), new Vec2f(0f, 0f), serverWorld, 2, translate, new LiteralText(translate),entity);
     }
 
 }

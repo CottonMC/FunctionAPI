@@ -5,7 +5,6 @@ import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
-import io.github.cottonmc.functionapi.marker.Marked;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -14,7 +13,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -37,7 +35,6 @@ import java.util.List;
 @Mixin(value = Entity.class, priority = 0)
 @Implements({
 @Interface(iface = ScriptedObject.class, prefix = "api_scripted$"),
-@Interface(iface = Marked.class, prefix = "api_marker$")
 })
 public abstract class EntityMixin{
     private CompoundTag oldTag = null;
@@ -126,27 +123,6 @@ public abstract class EntityMixin{
         }
 
     }
-
-    @Inject(at = @At("HEAD"), method = "fromTag")
-    private void fromTag(CompoundTag compoundTag, CallbackInfo cir){
-        for(Tag tag : compoundTag.getList("markers", 8)){
-            String id = tag.asString();
-            markers.add(new Identifier(id));
-        }
-    }
-
-    public boolean api_marker$hasMarker(Identifier identifier){
-        return markers.contains(identifier);
-    }
-
-    public List<Identifier> api_marker$getMarkers(){
-        return markers;
-    }
-
-    /*
-     * marker end
-     * */
-
 
     public FunctionAPIIdentifier api_scripted$getEventID(){
         if(thisId == null){

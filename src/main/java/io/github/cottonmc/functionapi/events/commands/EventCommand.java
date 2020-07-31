@@ -36,7 +36,12 @@ public class EventCommand{
         .requires((serverCommandSource_1) -> serverCommandSource_1.hasPermissionLevel(2))
         .then(CommandManager.literal("cancel")
         .executes(context -> {
-            ((CommandSourceExtension)context.getSource()).cancel();
+            ((CommandSourceExtension)context.getSource()).setCancelled(true);
+            return 1;
+        }))
+        .then(CommandManager.literal("pass")
+        .executes(context -> {
+            ((CommandSourceExtension)context.getSource()).setCancelled(false);
             return 1;
         }))
         .then(CommandManager.literal("clear")
