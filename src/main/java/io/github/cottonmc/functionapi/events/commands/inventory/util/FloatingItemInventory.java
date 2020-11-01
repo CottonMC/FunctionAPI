@@ -27,7 +27,7 @@ public class FloatingItemInventory implements Inventory {
         this.blockPos = blockPos;
 
         box = new Box(blockPos);
-        entities = world.getEntities(EntityType.ITEM, box, entity -> true).stream().map(entity -> (ItemEntity) entity).collect(Collectors.toList());
+        entities = world.getEntitiesByType(EntityType.ITEM, box, entity -> true).stream().map(entity -> (ItemEntity) entity).collect(Collectors.toList());
     }
 
     @Override

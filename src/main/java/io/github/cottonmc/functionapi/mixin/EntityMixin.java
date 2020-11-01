@@ -93,7 +93,7 @@ public abstract class EntityMixin{
     }
 
     @Inject(at = @At("HEAD"), method = "onStruckByLightning")
-    private void onStruckByLightning(LightningEntity lightningEntity_1, CallbackInfo ci){
+    private void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity, CallbackInfo ci){
 
         if(world instanceof ServerWorld){
             ScriptedObject entity = (ScriptedObject)this;

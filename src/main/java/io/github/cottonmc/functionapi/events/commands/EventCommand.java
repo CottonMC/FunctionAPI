@@ -7,7 +7,7 @@ import io.github.cottonmc.functionapi.api.*;
 import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import io.github.cottonmc.functionapi.events.*;
 import net.fabricmc.loader.api.*;
-import net.minecraft.command.arguments.*;
+import net.minecraft.command.argument.*;
 import net.minecraft.server.command.*;
 import net.minecraft.text.*;
 import net.minecraft.util.*;

@@ -29,7 +29,8 @@
     "fabric": "*",
     "functionapi_common": "*",
     "functionapi_common_scripting": "*",
-    "cotton-config": "*"
+    "cotton-config": "*",
+    "fabric-language-kotlin": ">=1.3.50"
   },
   "suggests": {
     "flamingo": "*"

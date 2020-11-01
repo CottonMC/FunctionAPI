@@ -1,8 +1,8 @@
 package io.github.cottonmc.functionapi.events.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.Vec3ArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;

@@ -1,9 +1,9 @@
 import java.util.regex.Pattern
 
 plugins{
-    id 'fabric-loom' version '0.4-SNAPSHOT'
+    id 'fabric-loom'
     id 'maven-publish'
-    id "com.jfrog.artifactory" version "4.9.0"
+    id "com.jfrog.artifactory" version "4.15.2"
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -29,7 +29,6 @@ allprojects{
     }
     apply plugin: "idea"
 }
-
 minecraft{
 }
 
@@ -40,12 +39,20 @@ dependencies{
     modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:$fabric_version"
     modImplementation group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.7'
+    include group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.7'
 
+    modImplementation(group : "net.fabricmc", name : "fabric-language-kotlin", version : fabric_kotlin_version)
 
-    compile("io.github.cottonmc:functionapi-scripting:1.1")
+    //non-mod library dependencies.
+    modCompile("io.github.cottonmc:functionapi-scripting:1.1"){
+        exclude group: "com.google.guava"
+        exclude group: "com.google.code.gson"
+        exclude group: "org.apache.commons"
+        exclude group: "com.mojang"
+    }
     include("io.github.cottonmc:functionapi-scripting:1.1")
-
     include("io.github.cottonmc:functionapi-api:1.5-SNAPSHOT")
+
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.

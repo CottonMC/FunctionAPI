@@ -5,11 +5,10 @@ import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.*;
 import io.github.cottonmc.functionapi.api.content.block.enums.*;
 import io.github.cottonmc.functionapi.commands.arguments.*;
-import net.minecraft.command.*;
-import net.minecraft.command.arguments.*;
+import net.minecraft.command.argument.*;
 import net.minecraft.server.command.*;
 
-public class MoveItem{
+public class MoveItemCommand{
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher){
         dispatcher.register(

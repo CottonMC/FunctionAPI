@@ -24,9 +24,7 @@ public abstract class ExplosionMixin{
 
     @Shadow @Final private World world;
     @Shadow @Final private Entity entity;
-    @Shadow @Final private double x;
-    @Shadow @Final private double y;
-    @Shadow @Final private double z;
+
 
     @Shadow public abstract List<BlockPos> getAffectedBlocks();
 
@@ -35,7 +33,7 @@ public abstract class ExplosionMixin{
     method = "collectBlocksAndDamageEntities"
     )
     private void collectBlocksAndDamageEntities(CallbackInfo ci){
-        if(!this.world.isClient){
+        if(!this.world.isClient && entity != null){
             ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject)entity, "before/explode_start",ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld)world, entity));
             if(((CommandSourceExtension)serverCommandSource).isCancelled()){
                 ci.cancel();
@@ -50,7 +48,7 @@ public abstract class ExplosionMixin{
     method = "affectWorld",
     cancellable = true)
     private void affectWorld(boolean bl, CallbackInfo ci){
-        if(!this.world.isClient){
+        if(!this.world.isClient && entity != null){
             ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject)entity, "before/explode_blocks",ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld)world, entity));
             if(((CommandSourceExtension)serverCommandSource).isCancelled()){
                 ci.cancel();

@@ -39,20 +39,15 @@ public class GlobalEventContainer extends GlobalFunctionManager<ServerCommandSou
     public static GlobalEventContainer getInstance() {
         if (INSTANCE == null)
             INSTANCE = new GlobalEventContainer();
-
         return INSTANCE;
     }
 
-
     /**
-     * Runs the initializtion callback for the event.
+     * Runs the initialization callback for the event.
      */
     public void initCallback(FunctionAPIIdentifier eventManagerID, MinecraftServer server) {
         FunctionAPIIdentifierImpl callbackID = new FunctionAPIIdentifierImpl(eventManagerID.getNamespace(), eventManagerID.getPath() + "_create_callback");
         EventManager managerCallback = new EventManager(callbackID);
         managerCallback.fire(server.getCommandSource());
     }
-
-
-
 }

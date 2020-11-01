@@ -24,8 +24,8 @@ import java.util.function.*;
 public abstract class ServerWorldMixin extends World{
 
 
-    protected ServerWorldMixin(MutableWorldProperties mutableWorldProperties, RegistryKey<World> registryKey, RegistryKey<DimensionType> registryKey2, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l){
-        super(mutableWorldProperties, registryKey, registryKey2, dimensionType, supplier, bl, bl2, l);
+    protected ServerWorldMixin(MutableWorldProperties mutableWorldProperties, RegistryKey<World> registryKey, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l){
+        super(mutableWorldProperties, registryKey, dimensionType, supplier, bl, bl2, l);
     }
 
     @Inject(

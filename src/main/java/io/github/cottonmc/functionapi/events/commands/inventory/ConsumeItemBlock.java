@@ -3,7 +3,7 @@ package io.github.cottonmc.functionapi.events.commands.inventory;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.*;
 import io.github.cottonmc.functionapi.api.commands.CommandWithArgument;
-import net.minecraft.command.arguments.*;
+import net.minecraft.command.argument.*;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.math.*;
