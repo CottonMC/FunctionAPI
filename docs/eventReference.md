@@ -41,6 +41,7 @@ If an event is blocking, then it will pause the game until the execution is done
 | \<namespace\>:block/\<name\>/entity_collided||The source block, running it it's position, also the entity that is the source of this interaction|No|
 | \<namespace\>:block/\<name\>/projectile_hit||The source block, running it it's position, also the entity that is the source of this interaction|No|
 | \<namespace\>:block/\<name\>/tick||The source block, running it it's position, also the entity that is the source of this interaction|No|
+| \<namespace\>:block/\<name\>/random_tick||The source block, running it it's position, also the entity that is the source of this interaction|No|
 | \<namespace\>:item/\<name\>/use_on_block||The source block, running it it's position, also the entity that is the source of this interaction|No|
 | \<namespace\>:item/\<name\>/use_on_block_offhand||The source block, running it it's position, also the entity that is the source of this interaction|No|
 | \<namespace\>:item/\<name\>/before/use_on_block||The source block, running it it's position, also the entity that is the source of this interaction|Yes, can be cancelled!|

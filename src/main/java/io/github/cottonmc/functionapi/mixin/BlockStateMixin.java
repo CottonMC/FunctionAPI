@@ -99,4 +99,8 @@ public abstract class BlockStateMixin {
             GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "tick", ServerCommandSourceFactory.INSTANCE.create(serverWorld.getServer(), serverWorld, this.getBlock(), blockPos))/* Fired on every scheduled tick.*/;
     }
 
+    @Inject(at=@At("TAIL"),method = "randomTick")
+    private void randomTick(ServerWorld serverWorld, BlockPos blockPos, Random random, CallbackInfo ci){
+        GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "random_tick", ServerCommandSourceFactory.INSTANCE.create(serverWorld.getServer(), serverWorld, this.getBlock(), blockPos))/* Fired on every random tick.*/;
+    }
 }
