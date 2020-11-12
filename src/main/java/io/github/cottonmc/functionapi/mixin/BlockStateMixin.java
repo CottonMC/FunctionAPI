@@ -15,7 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -103,4 +103,16 @@ public abstract class BlockStateMixin {
     private void randomTick(ServerWorld serverWorld, BlockPos blockPos, Random random, CallbackInfo ci){
         GlobalEventContainer.getInstance().executeEvent((ScriptedObject) this.getBlock(), "random_tick", ServerCommandSourceFactory.INSTANCE.create(serverWorld.getServer(), serverWorld, this.getBlock(), blockPos))/* Fired on every random tick.*/;
     }
+
+    //material override
+
+    @Inject(
+    at = @At("RETURN"),
+    method = "getHardness",
+    cancellable = true
+    )
+    private void overrideHardness(BlockView blockView, BlockPos blockPos, CallbackInfoReturnable<Float> cir){
+
+    }
+
 }

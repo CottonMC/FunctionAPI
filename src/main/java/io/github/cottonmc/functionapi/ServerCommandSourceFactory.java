@@ -45,7 +45,14 @@ public class ServerCommandSourceFactory {
     }
 
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Entity entity) {
-        return create(minecraftServer, entity.getPos(), entity.getRotationClient(), serverWorld, 2, entity.getName().getString(), entity.getName(),entity);
+        if(entity == null){
+            return minecraftServer.getCommandSource();
+        }
+        Text name = entity.getName();
+        if(name == null){
+            return create(minecraftServer, entity.getPos(), entity.getRotationClient(), serverWorld, 2, entity.getType().getName().getString(), name,entity);
+        }else
+        return create(minecraftServer, entity.getPos(), entity.getRotationClient(), serverWorld, 2, name.getString(), name,entity);
     }
 
     public ServerCommandSource create(ServerWorld serverWorld, Entity entity) {

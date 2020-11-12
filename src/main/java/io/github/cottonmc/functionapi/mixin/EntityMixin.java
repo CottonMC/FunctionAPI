@@ -48,6 +48,8 @@ public abstract class EntityMixin{
     @Shadow
     public abstract EntityType<?> getType();
 
+    @Shadow public abstract boolean isAlive();
+
     private Identifier thisId = null;
 
     @Inject(
@@ -55,10 +57,7 @@ public abstract class EntityMixin{
     method = "baseTick"
     )
     private void tick(CallbackInfo ci){
-        if(world.isClient())
-            return;
-
-        if(world instanceof ServerWorld){
+        if(world instanceof ServerWorld && isAlive()){
             ScriptedObject entity = (ScriptedObject)this;
             GlobalEventContainer.getInstance().executeEvent(entity, "tick", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)world, (Entity)(Object)this));
         }
@@ -70,7 +69,7 @@ public abstract class EntityMixin{
     )
     private void swimStart(CallbackInfo ci){
 
-        if(world instanceof ServerWorld){
+        if(world instanceof ServerWorld && isAlive()){
             ScriptedObject entity = (ScriptedObject)this;
             GlobalEventContainer.getInstance().executeEvent(entity, "swim_start", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)world, (Entity)(Object)this));
         }
@@ -82,7 +81,7 @@ public abstract class EntityMixin{
 
         ScriptedObject entity = (ScriptedObject)this;
 
-        if(world instanceof ServerWorld){
+        if(world instanceof ServerWorld && isAlive()){
             ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking(entity, "before/damage", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)world, (Entity)(Object)this));
 
             if(((CommandSourceExtension)serverCommandSource).isCancelled()){
@@ -95,7 +94,7 @@ public abstract class EntityMixin{
     @Inject(at = @At("HEAD"), method = "onStruckByLightning")
     private void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity, CallbackInfo ci){
 
-        if(world instanceof ServerWorld){
+        if(world instanceof ServerWorld && isAlive()){
             ScriptedObject entity = (ScriptedObject)this;
             GlobalEventContainer.getInstance().executeEvent(entity, "struck_by_lightning", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)world, (Entity)(Object)this));
         }

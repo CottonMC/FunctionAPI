@@ -29,7 +29,7 @@ public abstract class LivingEntityMixin extends Entity{
 
     @Inject(at = @At("HEAD"), method = "onAttacking")
     private void onAttacking(Entity entity_1, CallbackInfo ci) {
-        if (world instanceof ServerWorld) {
+        if(world instanceof ServerWorld && isAlive()){
             ScriptedObject entity = (ScriptedObject) this;
             GlobalEventContainer.getInstance().executeEvent(entity, "attacking", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
         }
@@ -40,7 +40,7 @@ public abstract class LivingEntityMixin extends Entity{
      */
     @Inject(at = @At("HEAD"), method = "onDeath")
     private void onDeath(DamageSource damageSource_1, CallbackInfo ci) {
-        if (world instanceof ServerWorld) {
+        if(world instanceof ServerWorld && isAlive()){
             ScriptedObject entity = (ScriptedObject) this;
             GlobalEventContainer.getInstance().executeEvent(entity, "death", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));
         }
@@ -49,7 +49,7 @@ public abstract class LivingEntityMixin extends Entity{
 
     @Inject(at = @At("TAIL"), method = "damage", cancellable = true)
     private void damaged(DamageSource damageSource_1, float float_1, CallbackInfoReturnable<Boolean> cir) {
-        if (world instanceof ServerWorld) {
+        if(world instanceof ServerWorld && isAlive()){
             if (isBlocking()) {
                 ScriptedObject entity = (ScriptedObject) this;
                 GlobalEventContainer.getInstance().executeEvent(entity, "shield_hit", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, this));

@@ -17,8 +17,8 @@ allprojects{
     repositories{
         mavenCentral()
         mavenLocal()
-        maven{ url 'http://server.bbkr.space:8081/artifactory/libs-release' }
-        maven{ url 'http://server.bbkr.space:8081/artifactory/libs-snapshot' }
+        maven{ url 'https://server.bbkr.space/artifactory/libs-release' }
+        maven{ url 'https://server.bbkr.space/artifactory/libs-snapshot' }
         maven{
             url "https://libraries.minecraft.net"
         }
@@ -141,7 +141,7 @@ publishing{
 
 artifactory{
     if(project.hasProperty("artifactoryUsername")){
-        contextUrl = 'http://server.bbkr.space:8081/artifactory/'
+        contextUrl = 'https://server.bbkr.space/artifactory/'
         publish{
             repository{
                 if(version.contains("SNAPSHOT")){
@@ -215,6 +215,9 @@ If an event is blocking, then it will pause the game until the execution is done
                         case "Target.ENTITY_TARGET":
                             params[0] = "entity"
                             break;
+                        case "(ScriptedObject)stack.getItem()":
+                            params[0] = "item"
+                            break;
                         default:
                             if(file.name == "BlockMixin.java")
                                 params[0] = "block"
@@ -233,15 +236,15 @@ If an event is blocking, then it will pause the game until the execution is done
                     if(!components.isEmpty())
                         components.removeAt(0)
 
-                    if(components.size() == 1){
+                    if(components.size() == 1 || params[0] == "entity"){
                         components = "The source entity, running it it's position"
-                    }
+                    }else
                     if(components.size() == 2){
                         components = "The source block, running it it's position"
-                    }
+                    }else
                     if(components.size() == 3){
                         components = "The source block, running it it's position, also the entity that is the source of this interaction"
-                    }
+                    }else
                     if(components.size() == 4){
                         components = "The source block, running it it's position, also the entity that is the source of this interaction"
                     }

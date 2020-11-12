@@ -27,7 +27,7 @@ public abstract class CreeperEntityMixin extends HostileEntity {
 
         ScriptedObject creeper = (ScriptedObject) this;
 
-        if (world instanceof ServerWorld) {
+        if(world instanceof ServerWorld && isAlive()){
             ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking(creeper, "before/explode", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld) world, (Entity) (Object) this));
 
             if (((CommandSourceExtension) serverCommandSource).isCancelled()) {

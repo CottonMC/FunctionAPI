@@ -4,10 +4,12 @@ import io.github.cottonmc.functionapi.*;
 import io.github.cottonmc.functionapi.api.commands.*;
 import io.github.cottonmc.functionapi.api.script.*;
 import io.github.cottonmc.functionapi.events.*;
+import net.minecraft.block.*;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.*;
 import net.minecraft.server.command.*;
 import net.minecraft.server.world.*;
+import net.minecraft.util.math.*;
 import net.minecraft.util.profiler.*;
 import net.minecraft.util.registry.*;
 import net.minecraft.world.*;
@@ -41,12 +43,23 @@ public abstract class ServerWorldMixin extends World{
     method = "createExplosion(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;Lnet/minecraft/world/explosion/ExplosionBehavior;DDDFZLnet/minecraft/world/explosion/Explosion$DestructionType;)Lnet/minecraft/world/explosion/Explosion;",
     cancellable = true)
     private void explosion(Entity entity, DamageSource damageSource, ExplosionBehavior explosionBehavior, double d, double e, double f, float g, boolean bl, DestructionType destructionType, CallbackInfoReturnable<Explosion> cir){
-        ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject)entity, "before/explode", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)(Object)this, entity));
+        if(entity == null){
+            BlockPos blockPos = new BlockPos((int)d, (int)e, (int)f);
+            Block source = getBlockState(blockPos).getBlock();
+            System.out.println(source);
+            ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject)source, "before/explode_start", ServerCommandSourceFactory.INSTANCE.create((ServerWorld)(Object)this, source, blockPos));
+            if(((CommandSourceExtension)serverCommandSource).isCancelled()){
+                cir.cancel();
+            }
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject)source, "explode_start", ServerCommandSourceFactory.INSTANCE.create((ServerWorld)(Object)this, source, blockPos));
+        }else{
+            ServerCommandSource serverCommandSource = GlobalEventContainer.getInstance().executeEventBlocking((ScriptedObject)entity, "before/explode", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)(Object)this, entity));
 
-        if(((CommandSourceExtension)serverCommandSource).isCancelled()){
-            cir.cancel();
+            if(((CommandSourceExtension)serverCommandSource).isCancelled()){
+                cir.cancel();
+            }
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject)entity, "explode", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)(Object)this, entity));
         }
-        GlobalEventContainer.getInstance().executeEvent((ScriptedObject)entity, "explode", ServerCommandSourceFactory.INSTANCE.create(getServer(), (ServerWorld)(Object)this, entity));
 
     }
 }

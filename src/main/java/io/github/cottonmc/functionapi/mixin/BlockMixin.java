@@ -1,17 +1,20 @@
 package io.github.cottonmc.functionapi.mixin;
 
-import io.github.cottonmc.functionapi.ServerCommandSourceFactory;
+import io.github.cottonmc.functionapi.*;
 import io.github.cottonmc.functionapi.api.FunctionAPIIdentifier;
 import io.github.cottonmc.functionapi.api.commands.CommandSourceExtension;
 import io.github.cottonmc.functionapi.api.script.ScriptedObject;
 import io.github.cottonmc.functionapi.events.GlobalEventContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -22,7 +25,9 @@ import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.*;
+
+import java.util.*;
 
 /**
  * adds scripting functionality to the block class.
@@ -58,7 +63,6 @@ public abstract class BlockMixin implements ScriptedObject{
             }
         }
     }
-
 
     @Inject(
             at = @At("HEAD"),
@@ -103,6 +107,13 @@ public abstract class BlockMixin implements ScriptedObject{
         }
     }
 
+    //hook for the cosmere mod.
+    @Inject(at = @At("HEAD"), method = "afterBreak")
+    private void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack stack, CallbackInfo ci){
+        if (world instanceof ServerWorld) {
+            GlobalEventContainer.getInstance().executeEvent((ScriptedObject)stack.getItem(), "after_break", ServerCommandSourceFactory.INSTANCE.create(world.getServer(), (ServerWorld) world, (Block) (Object) this, pos, player));
+        }
+    }
 
     @Inject(
             at = @At("HEAD"),
@@ -125,6 +136,22 @@ public abstract class BlockMixin implements ScriptedObject{
     private void onLandedUpon(World world_1, BlockPos blockPos_1, Entity entity_1, float float_1, CallbackInfo ci) {
         if (world_1 instanceof ServerWorld) {
             GlobalEventContainer.getInstance().executeEvent(this, "entity_landed", ServerCommandSourceFactory.INSTANCE.create(world_1.getServer(), (ServerWorld) world_1, (Block) (Object) this, blockPos_1, entity_1));
+        }
+    }
+
+
+    /**
+     * if the block is tagged with function_api:ticks_randomly, then we enable random ticking
+     * */
+    @Inject(
+    at = @At("TAIL"),
+    method = "hasRandomTicks",
+    cancellable = true
+    )
+    private void hasRandomTicks(BlockState blockState, CallbackInfoReturnable<Boolean> cir) {
+        Collection<Identifier> tagsFor = BlockTags.getTagGroup().getTagsFor((Block)(Object)this);
+        if(tagsFor.contains(FunctionAPI.hasRandoMTicks)){
+            cir.setReturnValue(true);
         }
     }
 

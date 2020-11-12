@@ -4,11 +4,13 @@ import io.github.cottonmc.cotton.config.*;
 import io.github.cottonmc.functionapi.events.commands.*;
 import net.fabricmc.api.*;
 import net.fabricmc.fabric.api.registry.*;
+import net.minecraft.util.*;
 
 public class FunctionAPI implements ModInitializer {
 
     public static final String MODID = "functionapi";
     public static Config config;
+    public static final Identifier hasRandoMTicks = new Identifier(MODID,"ticks_randomly");
 
     static {
     }
