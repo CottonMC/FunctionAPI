@@ -1,4 +1,4 @@
-package io.github.cottonmc.functionapi.events.commands.inventory.util;
+package io.github.cottonmc.functionapi.commands.inventory.util;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;

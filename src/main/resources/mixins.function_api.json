@@ -13,7 +13,9 @@
     "BlockMixin",
     "BlockStateMixin",
     "IdentifierMixin",
-    "ServerWorldMixin"
+    "ServerWorldMixin",
+    "StringNbtReaderMixin",
+    "ExplosionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

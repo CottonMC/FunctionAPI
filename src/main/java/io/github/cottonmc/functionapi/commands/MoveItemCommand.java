@@ -1,8 +1,7 @@
-package io.github.cottonmc.functionapi.events.commands;
+package io.github.cottonmc.functionapi.commands;
 
 import com.mojang.brigadier.*;
 import com.mojang.brigadier.arguments.*;
-import com.mojang.brigadier.builder.*;
 import io.github.cottonmc.functionapi.api.content.block.enums.*;
 import io.github.cottonmc.functionapi.commands.arguments.*;
 import net.minecraft.command.argument.*;

@@ -1,4 +1,4 @@
-package io.github.cottonmc.functionapi.events.commands;
+package io.github.cottonmc.functionapi.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.EntityArgumentType;

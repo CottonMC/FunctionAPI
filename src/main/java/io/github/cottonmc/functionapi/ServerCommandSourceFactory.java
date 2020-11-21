@@ -46,6 +46,7 @@ public class ServerCommandSourceFactory {
 
     public ServerCommandSource create(MinecraftServer minecraftServer, ServerWorld serverWorld, Entity entity) {
         if(entity == null){
+            //fallback if the entity is still null at this point.
             return minecraftServer.getCommandSource();
         }
         Text name = entity.getName();

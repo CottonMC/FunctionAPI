@@ -1,4 +1,4 @@
-package io.github.cottonmc.functionapi.events.commands.inventory;
+package io.github.cottonmc.functionapi.commands.inventory;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.cottonmc.functionapi.Util;
 import io.github.cottonmc.functionapi.api.commands.CommandWithTwoArguments;
 import io.github.cottonmc.functionapi.api.content.block.enums.Direction;
-import io.github.cottonmc.functionapi.events.commands.inventory.util.FloatingItemInventory;
+import io.github.cottonmc.functionapi.commands.inventory.util.FloatingItemInventory;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;

@@ -1,4 +1,4 @@
-package io.github.cottonmc.functionapi.events.commands.inventory;
+package io.github.cottonmc.functionapi.commands.inventory;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.*;

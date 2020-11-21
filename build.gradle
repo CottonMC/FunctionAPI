@@ -9,7 +9,7 @@ plugins{
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-version = project.mod_version
+version = project.mod_version+"-"+minecraft_version
 group = project.maven_group
 
 allprojects{
@@ -29,6 +29,7 @@ allprojects{
     }
     apply plugin: "idea"
 }
+
 minecraft{
 }
 
@@ -41,8 +42,13 @@ dependencies{
     modImplementation group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.7'
     include group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.7'
 
+    modImplementation group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.7'
+    include group: 'io.github.cottonmc.cotton', name: 'cotton-config', version: '1.0.0-rc.7'
+
     modImplementation(group : "net.fabricmc", name : "fabric-language-kotlin", version : fabric_kotlin_version)
 
+    include(group: 'io.github.cottonmc.cotton', name: 'cotton-logging', version: '1.0.0-rc.1')
+    include(group: 'io.github.cottonmc', name: 'Jankson-Fabric', version: '3.0.1+j1.2.0')
     //non-mod library dependencies.
     modCompile("io.github.cottonmc:functionapi-scripting:1.1"){
         exclude group: "com.google.guava"
@@ -95,7 +101,6 @@ publishing{
     publications{
         maven(MavenPublication){
             from components.java
-
 
             pom.withXml{
                 def pomFile = asNode()
@@ -212,6 +217,8 @@ If an event is blocking, then it will pause the game until the execution is done
                             break;
                         case "(ScriptedObject) entity":
                         case "(ScriptedObject)entity":
+                        case "(ScriptedObject)entitySource":
+                        case "(ScriptedObject) entitySource":
                         case "Target.ENTITY_TARGET":
                             params[0] = "entity"
                             break;
